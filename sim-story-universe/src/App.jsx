@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './supabase.js';
 
-const TABLES = ['characters', 'stories', 'relationships', 'family_tree', 'ideas', 'tags'];
+const TABLES = ['chapters', 'characters', 'stories', 'relationships', 'family_tree', 'ideas', 'tags'];
 const NAV = [
   { id: 'home', label: 'Главная', icon: Home },
   { id: 'characters', label: 'Персонажи', icon: Users },
@@ -43,9 +43,10 @@ const blankCharacter = () => ({
   fears: '', dreams: '', biography: '', secrets: '', tags: [], portrait_url: '', is_favorite: false,
 });
 const blankStory = () => ({
-  title: '', subtitle: '', mood: 'Нежность', quote: '', tags: [], published: true,
+  title: '', subtitle: '', mood: 'Нежность', quote: '', tags: [], published: true, chapter_id: null,
   blocks: [{ type: 'paragraph', text: '' }], content: '',
 });
+const blankChapter = () => ({ title: '', description: '', generation: 1, sort_order: 1, is_current: false });
 const blankIdea = () => ({ title: '', content: '', category: 'Сцена', status: 'В планах', tags: [] });
 const blankRelationship = () => ({ from_character: '', to_character: '', type: 'друг', description: '', status: 'Активна', tags: [] });
 const uid = () => (globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); }));
@@ -75,8 +76,10 @@ function demoData() {
   const c3 = { id: '10000000-0000-4000-8000-000000000003', name: 'Алиса Вейл', age: 'Подросток', appearance: 'Короткое каре, веснушки и яркие заколки.', personality: 'Любопытная, наблюдательная и слишком взрослая для своего возраста.', traits: ['Любознательная', 'Смелая', 'Немного драматичная'], career: 'Школьница', hobbies: 'Рисование, дневники, городские легенды', fears: 'Что взрослые так и не расскажут ей правду.', dreams: 'Уехать учиться искусству и снять собственный фильм.', biography: 'Алиса замечает семейные недомолвки быстрее, чем взрослые успевают их замаскировать. Её блокнот — единственное место, где всем разрешено говорить правду.', secrets: 'У неё есть список вопросов, на которые она однажды потребует ответы.', tags: ['второе поколение', 'подростки'], portrait_url: '', is_favorite: false, created_at: now() };
   const s1 = { id: '20000000-0000-4000-8000-000000000001', title: 'Дом, в котором горит свет', subtitle: 'Глава 01 · Начало новой главы', mood: 'Ностальгия', quote: 'Некоторые двери открываются только тогда, когда перестаёшь стучать.', tags: ['семья', 'новое начало'], published: true, content: 'Вечером дом Вейлов пах яблочным пирогом и дождём. Мира открыла окно, чтобы впустить свежий воздух, и впервые за долгое время подумала, что перемены не обязательно должны быть страшными.\n\nЛеон вернулся поздно, с бумажным пакетом булочек и новостью, которую репетировал по дороге домой. Алиса сделала вид, что читает, хотя давно следила за каждым движением взрослых.', blocks: [{ type: 'paragraph', text: 'Вечером дом Вейлов пах яблочным пирогом и дождём. Мира открыла окно, чтобы впустить свежий воздух, и впервые за долгое время подумала, что перемены не обязательно должны быть страшными.' }, { type: 'quote', text: 'Некоторые двери открываются только тогда, когда перестаёшь стучать.' }, { type: 'paragraph', text: 'Леон вернулся поздно, с бумажным пакетом булочек и новостью, которую репетировал по дороге домой. Алиса сделала вид, что читает, хотя давно следила за каждым движением взрослых.' }], created_at: now() };
   const s2 = { id: '20000000-0000-4000-8000-000000000002', title: 'Письмо на подоконнике', subtitle: 'Запись из личного дневника', mood: 'Тайна', quote: 'Не каждое молчание означает отсутствие ответа.', tags: ['секреты', 'Мира'], published: true, content: 'Письмо лежало там уже три дня. Мира каждый раз проходила мимо, убеждая себя, что бумага просто случайно оказалась на подоконнике.\n\nНо на конверте было её имя — почерком, который она узнала бы даже спустя двадцать лет.', blocks: [{ type: 'paragraph', text: 'Письмо лежало там уже три дня. Мира каждый раз проходила мимо, убеждая себя, что бумага просто случайно оказалась на подоконнике.' }, { type: 'quote', text: 'Не каждое молчание означает отсутствие ответа.' }, { type: 'paragraph', text: 'Но на конверте было её имя — почерком, который она узнала бы даже спустя двадцать лет.' }], created_at: now() };
+  const chapter1 = { id: '60000000-0000-4000-8000-000000000001', title: 'Начало династии', description: 'История семьи Вейл начинается здесь.', generation: 1, sort_order: 1, is_current: true, created_at: now() };
+  s1.chapter_id = chapter1.id; s2.chapter_id = chapter1.id;
   return {
-    characters: [c1, c2, c3], stories: [s1, s2],
+    chapters: [chapter1], characters: [c1, c2, c3], stories: [s1, s2],
     relationships: [
       { id: '30000000-0000-4000-8000-000000000001', from_character: c1.id, to_character: c2.id, type: 'жена', tags: ['семья', 'романтика'], description: 'Вместе строят дом и учатся говорить о сложном.', status: 'Активна', created_at: now() },
       { id: '30000000-0000-4000-8000-000000000002', from_character: c1.id, to_character: c3.id, type: 'мама', tags: ['семья', 'воспитание'], description: 'Мира хочет дать дочери свободу и одновременно уберечь её от ошибок.', status: 'Активна', created_at: now() },
@@ -234,6 +237,8 @@ try {
   const canEdit =
   !isSupabaseConfigured ||
   user?.id === '28dccdbc-5527-42df-82e3-47ca97ab4d7f';
+  const chapters = safeArray(data.chapters).slice().sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+  const currentChapter = chapters.find(chapter => chapter.is_current) || chapters[0] || null;
   const characters = safeArray(data.characters);
   const stories = safeArray(data.stories);
   const relationships = safeArray(data.relationships);
@@ -332,6 +337,36 @@ setData(prev => ({
       }
     }
   }, []);
+
+  const saveChapter = async (form) => {
+    const wasCurrent = chapters.some(chapter => chapter.is_current);
+    const payload = { ...form, generation: Math.max(1, Number(form.generation) || 1), sort_order: Number(form.sort_order) || (chapters.length + 1), is_current: Boolean(form.is_current || (!wasCurrent && !form.id)) };
+    if (payload.is_current && supabase) {
+      for (const chapter of chapters.filter(chapter => chapter.is_current && chapter.id !== payload.id)) {
+        const { error } = await supabase.from('chapters').update({ is_current: false }).eq('id', chapter.id);
+        if (error) throw error;
+      }
+    }
+    if (payload.is_current) setData(prev => ({ ...prev, chapters: safeArray(prev.chapters).map(chapter => ({ ...chapter, is_current: chapter.id === payload.id })) }));
+    const saved = await saveRecord('chapters', payload);
+    if (saved.is_current) setData(prev => ({ ...prev, chapters: safeArray(prev.chapters).map(chapter => ({ ...chapter, is_current: chapter.id === saved.id })) }));
+    setModal(null); setEditing(null);
+  };
+
+  const setCurrentChapter = async (chapter) => {
+    try {
+      if (supabase) {
+        for (const item of chapters.filter(item => item.is_current && item.id !== chapter.id)) {
+          const { error } = await supabase.from('chapters').update({ is_current: false }).eq('id', item.id);
+          if (error) throw error;
+        }
+        const { error } = await supabase.from('chapters').update({ is_current: true }).eq('id', chapter.id);
+        if (error) throw error;
+      }
+      setData(prev => ({ ...prev, chapters: safeArray(prev.chapters).map(item => ({ ...item, is_current: item.id === chapter.id })) }));
+      notify(`Текущая глава — «${chapter.title}» ✨`);
+    } catch (error) { notify(`Не удалось сменить поколение: ${error.message}`, 'error'); }
+  };
 
   const saveCharacter = async (form) => {
     const previous = characters.find(c => c.id === form.id);
@@ -466,7 +501,7 @@ setData(prev => ({
         <div className="brand-name">sim story <strong>universe</strong><small>YOUR LEGACY, YOUR MAGIC</small></div>
         <IconButton title="Закрыть меню" className="sidebar-close" onClick={() => setMobileMenu(false)}><X size={18} /></IconButton>
       </div>
-      <div className="sidebar-season"><div className="season-label"><span className="season-dot" /> ТВОЯ ВСЕЛЕННАЯ</div><p>Сезон <b>01</b> · Поколение <b>01</b></p><div className="season-progress"><span /></div><small>История только начинается</small></div>
+      <div className="sidebar-season"><div className="season-label"><span className="season-dot" /> ТВОЯ ВСЕЛЕННАЯ</div><p>Сезон <b>01</b> · Поколение <b>{String(currentChapter?.generation || 1).padStart(2, '0')}</b></p><div className="season-progress"><span /></div><small>{currentChapter?.title || 'История только начинается'}</small></div>
       <nav className="main-nav" aria-label="Основная навигация">
         <div className="nav-caption">АРХИВ</div>
         {NAV.map(item => <button key={item.id} className={`nav-item ${activeSection === item.id ? 'active' : ''}`} onClick={() => changeSection(item.id)}><item.icon size={18} strokeWidth={1.8} /><span>{item.label}</span>{item.id === 'characters' && <small>{characters.length || '—'}</small>}</button>)}
@@ -488,7 +523,7 @@ setData(prev => ({
       {!hasLoaded ? <div className="loading-state"><div className="loader-heart">♡</div><p>Открываем архив твоей вселенной…</p></div> : <>
         {activeSection === 'home' && <HomePage data={data} characters={characters} stories={stories} ideas={ideas} quote={quote} setQuote={() => setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])} setSection={changeSection} openStory={setStoryOpen} openCharacter={setViewCharacter} createCharacter={() => startCreate('character')} createStory={() => startCreate('story')} />}
         {activeSection === 'characters' && <CharactersPage characters={characters} relationships={relationships} onCreate={() => startCreate('character')} onEdit={c => startEdit('character', c)} onOpen={setViewCharacter} onDelete={c => requireEdit(() => setModal({ type: 'confirmDelete', table: 'characters', record: c, title: c.name }))} canEdit={canEdit} />}
-        {activeSection === 'stories' && <StoriesPage stories={stories} onCreate={() => startCreate('story')} onEdit={s => startEdit('story', s)} onOpen={setStoryOpen} onDelete={s => requireEdit(() => setModal({ type: 'confirmDelete', table: 'stories', record: s, title: s.title }))} canEdit={canEdit} />}
+        {activeSection === 'stories' && <StoriesPage stories={stories} chapters={chapters} onCreate={() => startCreate('story')} onCreateChapter={() => startCreate('chapter')} onEditChapter={chapter => startEdit('chapter', chapter)} onSetCurrentChapter={setCurrentChapter} onEdit={s => startEdit('story', s)} onOpen={setStoryOpen} onDelete={s => requireEdit(() => setModal({ type: 'confirmDelete', table: 'stories', record: s, title: s.title }))} onDeleteChapter={chapter => requireEdit(() => setModal({ type: 'confirmDelete', table: 'chapters', record: chapter, title: chapter.title }))} canEdit={canEdit} />}
         {activeSection === 'tree' && <FamilyTreePage characters={characters} relationships={relationships} treeRows={treeRows} onCreateRelation={() => startCreate('relationship')} onMove={saveTreePosition} onEditRelation={r => startEdit('relationship', r)} onDeleteRelation={r => requireEdit(() => setModal({ type: 'confirmDelete', table: 'relationships', record: r, title: 'эту связь' }))} openCharacter={setViewCharacter} canEdit={canEdit} notify={notify} />}
         {activeSection === 'relationships' && <RelationshipsPage relationships={relationships} characters={characters} onCreate={() => startCreate('relationship')} onEdit={r => startEdit('relationship', r)} onDelete={r => requireEdit(() => setModal({ type: 'confirmDelete', table: 'relationships', record: r, title: 'эту связь' }))} canEdit={canEdit} />}
         {activeSection === 'ideas' && <IdeasPage ideas={ideas} onCreate={() => startCreate('idea')} onEdit={i => startEdit('idea', i)} onDelete={i => requireEdit(() => setModal({ type: 'confirmDelete', table: 'ideas', record: i, title: i.title }))} canEdit={canEdit} />}
@@ -498,7 +533,8 @@ setData(prev => ({
     </main>
 
     {modal?.type === 'character' && <CharacterModal record={editing} onClose={() => { setModal(null); setEditing(null); }} onSave={saveCharacter} uploadImage={uploadImage} deleteStoredImage={deleteStoredImage} onDelete={() => setModal({ type: 'confirmDelete', table: 'characters', record: editing, title: editing?.name })} notify={notify} />}
-    {modal?.type === 'story' && <StoryModal record={editing} onClose={() => { setModal(null); setEditing(null); }} onSave={async f => { await saveRecord('stories', f); setModal(null); setEditing(null); }} uploadImage={uploadImage} deleteStoredImage={deleteStoredImage} notify={notify} />}
+    {modal?.type === 'story' && <StoryModal record={editing} chapters={chapters} onClose={() => { setModal(null); setEditing(null); }} onSave={async f => { await saveRecord('stories', f); setModal(null); setEditing(null); }} uploadImage={uploadImage} deleteStoredImage={deleteStoredImage} notify={notify} />}
+    {modal?.type === 'chapter' && <ChapterModal record={editing} chapters={chapters} onClose={() => { setModal(null); setEditing(null); }} onSave={saveChapter} />}
     {modal?.type === 'idea' && <IdeaModal record={editing} onClose={() => { setModal(null); setEditing(null); }} onSave={async f => { await saveRecord('ideas', f); setModal(null); setEditing(null); }} />}
     {modal?.type === 'relationship' && <RelationshipModal record={editing} characters={characters} onClose={() => { setModal(null); setEditing(null); }} onSave={saveRelationship} />}
     {modal?.type === 'login' && <LoginModal onClose={() => setModal(null)} notify={notify} />}
