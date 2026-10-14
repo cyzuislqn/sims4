@@ -366,7 +366,7 @@ export default function App() {
       }),
       ideas: ideas.filter(i => tagMatch(i) && (!q || [i.title,i.content,i.category,i.status,...safeArray(i.tags)].some(includes))),
     };
-  }, [globalSearch, selectedcharacters, stories, relationships, ideas]);
+  }, [globalSearch, selectedTag, characters, stories, relationships, ideas]);
 
   const startCreate = (type) => requireEdit(() => { setEditing(null); setModal({ type }); });
   const startEdit = (type, record) => requireEdit(() => { setEditing(record); setModal({ type }); });
