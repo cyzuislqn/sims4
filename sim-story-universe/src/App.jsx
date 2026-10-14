@@ -231,7 +231,9 @@ try {
     }
   }, [data, notify]);
 
-  const canEdit = !isSupabaseConfigured || Boolean(user);
+  const canEdit =
+  !isSupabaseConfigured ||
+  user?.id === '28dccdbc-5527-42df-82e3-47ca97ab4d7f';
   const characters = safeArray(data.characters);
   const stories = safeArray(data.stories);
   const relationships = safeArray(data.relationships);
