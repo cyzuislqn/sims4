@@ -6,7 +6,7 @@ import {
   Settings2, ShieldCheck, Star, Trash2, Upload, UserRound, Users, WandSparkles, X,
   ZoomIn, ZoomOut, Cat, Flower2, ArrowUpRight, Lightbulb, BookHeart, Save, Grip,
   RefreshCw, LockKeyhole, CheckCircle2, Eye, EyeOff, ListFilter, HeartHandshake,
-  CalendarDays,
+  CalendarDays, Sparkles,
 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './supabase.js';
 
