@@ -921,6 +921,28 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
     } catch (e) { setError(e.message || 'Не удалось загрузить фото.'); }
     finally { setBusyImage(false); if (imageInputRef.current) imageInputRef.current.value = ''; }
   };
+  const placeCaretAtPoint = e => {
+    const doc = editorRef.current?.ownerDocument;
+    let range = doc?.caretRangeFromPoint?.(e.clientX, e.clientY) || null;
+    if (!range && doc?.caretPositionFromPoint) {
+      const p = doc.caretPositionFromPoint(e.clientX, e.clientY);
+      if (p) { range = doc.createRange(); range.setStart(p.offsetNode, p.offset); range.collapse(true); }
+    }
+    if (range && editorRef.current?.contains(range.commonAncestorContainer)) {
+      const selection = window.getSelection(); selection?.removeAllRanges(); selection?.addRange(range); saveSelection();
+    }
+  };
+  const handleEditorDrop = e => {
+    const file = Array.from(e.dataTransfer?.files || []).find(f => f.type?.startsWith('image/'));
+    if (!file) return;
+    e.preventDefault(); placeCaretAtPoint(e); addImageAtCursor(file);
+  };
+  const handleEditorPaste = e => {
+    const item = Array.from(e.clipboardData?.items || []).find(i => i.type?.startsWith('image/'));
+    const file = item?.getAsFile();
+    if (!file) return;
+    e.preventDefault(); saveSelection(); addImageAtCursor(file);
+  };
   const handleEditorClick = e => {
     const button = e.target.closest('[data-remove-image="true"]');
     if (!button || !editorRef.current?.contains(button)) return;
@@ -976,7 +998,7 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
         <button type="button" disabled={busyImage} onClick={() => { saveSelection(); imageInputRef.current?.click(); }}><ImagePlus size={14}/>{busyImage ? 'Загружаем…' : 'Вставить фото'}</button>
         <input ref={imageInputRef} className="inline-image-input" type="file" accept="image/*" onChange={e => addImageAtCursor(e.target.files?.[0])}/>
       </div>
-      <div ref={editorRef} className="inline-story-editor" contentEditable suppressContentEditableWarning role="textbox" aria-label="Текст истории" aria-multiline="true" onInput={saveSelection} onKeyUp={saveSelection} onMouseUp={saveSelection} onClick={handleEditorClick} data-placeholder="Начни писать историю… Нажми «Вставить фото», чтобы добавить кадр прямо сюда."/>
+      <div ref={editorRef} className="inline-story-editor" contentEditable suppressContentEditableWarning role="textbox" aria-label="Текст истории" aria-multiline="true" onInput={saveSelection} onKeyUp={saveSelection} onMouseUp={saveSelection} onClick={handleEditorClick} onDragOver={e => { if (Array.from(e.dataTransfer?.types || []).includes('Files')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } }} onDrop={handleEditorDrop} onPaste={handleEditorPaste} data-placeholder="Пиши здесь. Перетащи фото из папки прямо в текст или скопируй фото и вставь Ctrl/Cmd+V. Можно также нажать «Вставить фото»."/>
       <TagsField value={form.tags} onChange={v => setForm(p => ({...p,tags:v}))} label="Теги главы"/>
       <label className="favorite-toggle"><input type="checkbox" checked={Boolean(form.published)} onChange={e => setForm(p => ({...p,published:e.target.checked}))}/><span className="fake-check"><Eye size={14}/></span><span><b>Показывать в публичном архиве</b><small>Если снять галочку, глава не будет выводиться гостям после подключения правил публикации.</small></span></label>
       {error && <div className="form-error"><CircleHelp size={15}/>{error}</div>}
