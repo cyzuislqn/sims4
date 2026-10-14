@@ -244,7 +244,15 @@ export default function App() {
       if (!quiet) notify(input.id ? 'Изменения сохранены ✨' : 'Добавлено во вселенную ✨');
       return saved;
     }
-    setData(prev => ({ ...prev, [table]: [record, prev[table].filter(row => row.id !== record.id)] }));
+    
+setData(prev => ({
+  ...prev,
+  [table]: [
+    record,
+    ...safeArray(prev[table]).flat(Infinity).filter(row => row && row.id !== record.id)
+  ]
+}));
+
     if (!quiet) notify(input.id ? 'Изменения сохранены в этом браузере ✨' : 'Добавлено во вселенную ✨');
     return record;
   }, [notify]);
