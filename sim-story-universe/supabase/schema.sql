@@ -20,6 +20,8 @@ create table if not exists public.characters (
   secrets text default '',
   tags text[] not null default '{}',
   is_favorite boolean not null default false,
+  generation integer not null default 1,
+  character_type text not null default 'Побочный персонаж',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -52,6 +54,26 @@ create table if not exists public.relationships (
 );
 
 alter table public.relationships add column if not exists tags text[] not null default '{}';
+
+-- Character archive: generation number and main/side role.
+alter table public.characters add column if not exists generation integer not null default 1;
+alter table public.characters add column if not exists character_type text not null default 'Побочный персонаж';
+update public.characters set generation = greatest(1, generation) where generation is null or generation < 1;
+update public.characters
+set generation = case
+  when exists (select 1 from unnest(tags) t where lower(t) like '%пятое поколение%') then 5
+  when exists (select 1 from unnest(tags) t where lower(t) like '%четвёртое поколение%' or lower(t) like '%четвертое поколение%') then 4
+  when exists (select 1 from unnest(tags) t where lower(t) like '%третье поколение%') then 3
+  when exists (select 1 from unnest(tags) t where lower(t) like '%второе поколение%') then 2
+  when exists (select 1 from unnest(tags) t where lower(t) like '%первое поколение%') then 1
+  else generation
+end;
+update public.characters
+set character_type = case
+  when exists (select 1 from unnest(tags) t where lower(t) like '%основной персонаж%' or lower(t) like '%главная героиня%' or lower(t) like '%главный герой%' or lower(t) like '%главный персонаж%') then 'Основной персонаж'
+  else coalesce(nullif(character_type, ''), 'Побочный персонаж')
+end;
+
 
 create table if not exists public.family_tree (
   id uuid primary key default gen_random_uuid(),
