@@ -158,9 +158,9 @@ begin
       execute 'drop policy if exists "Signed-in users can read all stories" on public.stories';
       execute 'drop policy if exists "Owner can read all stories" on public.stories';
 
-      execute 'create policy "Public can read published stories"
-        on public.stories for select to anon
-        using (published = true)';
+     execute 'create policy "Public can read published stories"
+  on public.stories for select to anon, authenticated
+  using (published = true)';
 
       execute format(
         'create policy "Owner can read all stories"
