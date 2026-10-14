@@ -602,14 +602,35 @@ function CharacterCard({ character: c, relationships, index, onOpen, onEdit, onD
   </article>;
 }
 
-function StoriesPage({ stories, onCreate, onEdit, onOpen, onDelete, canEdit }) {
+function StoriesPage({ stories, chapters, onCreate, onCreateChapter, onEdit, onOpen, onDelete, onDeleteChapter, onEditChapter, onSetCurrentChapter, canEdit }) {
   const [search, setSearch] = useState(''); const [mood, setMood] = useState('Все настроения');
   const moods = ['Все настроения', ...new Set(stories.map(s => s.mood).filter(Boolean))];
-  const filtered = stories.filter(s => (mood === 'Все настроения' || s.mood === mood) && [s.title,s.subtitle,s.content,s.quote,...safeArray(s.tags)].join(' ').toLocaleLowerCase('ru').includes(search.toLocaleLowerCase('ru'))).sort((a,b) => new Date(b.created_at || 0)-new Date(a.created_at || 0));
-  return <div className="page-content"><PageHeader kicker="CHAPTERS & LITTLE MEMORIES" title="Истории" description="Главы, сцены, письма и моменты, которые делают династию живой." icon={BookOpen} action={canEdit ? onCreate : null} actionLabel="Новая глава" />
-    <div className="story-intro-note"><span>✧</span><p><b>Формат маленького журнала.</b> Добавляй абзацы, подзаголовки, цитаты и фотографии между ними — пусть каждая глава выглядит как отдельная история.</p><span>♡</span></div>
+  const needle = search.toLocaleLowerCase('ru');
+  const filtered = stories.filter(s => (mood === 'Все настроения' || s.mood === mood) && [s.title,s.subtitle,s.content,s.quote,...safeArray(s.tags)].join(' ').toLocaleLowerCase('ru').includes(needle)).sort((a,b) => new Date(b.created_at || 0)-new Date(a.created_at || 0));
+  const orderedChapters = safeArray(chapters).slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0));
+  const unassigned = filtered.filter(story => !story.chapter_id || !orderedChapters.some(chapter => chapter.id === story.chapter_id));
+  return <div className="page-content">
+    <PageHeader kicker="CHAPTERS & LITTLE MEMORIES" title="Истории" description="Династия — как книга: главы поколений, а внутри — истории, сцены и письма." icon={BookOpen} action={canEdit ? onCreate : null} actionLabel="Новая история" />
+    <div className="story-intro-note"><span>✧</span><p><b>Архив поколений.</b> Создавай отдельные главы династии, отмечай текущее поколение и складывай истории внутрь нужной главы. Старые записи можно перенести в любую главу.</p><span>♡</span></div>
+    {canEdit && <div className="chapter-toolbar"><div><b>{orderedChapters.length} {orderedChapters.length === 1 ? 'глава династии' : 'глав династии'}</b><span> · {stories.length} историй в архиве</span></div><Button icon={Plus} onClick={onCreateChapter}>Создать главу династии</Button></div>}
     <div className="list-toolbar"><label className="toolbar-search"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Поиск по заголовкам и тексту…"/><span>{filtered.length}</span></label><label className="sort-select"><Flower2 size={15}/><select value={mood} onChange={e => setMood(e.target.value)}>{moods.map(m => <option key={m}>{m}</option>)}</select><ChevronDown size={14}/></label></div>
-    {filtered.length ? <div className="story-grid">{filtered.map((s, i) => <StoryCard key={s.id} story={s} index={i} onOpen={() => onOpen(s)} onEdit={() => onEdit(s)} onDelete={() => onDelete(s)} canEdit={canEdit} />)}</div> : <EmptyState icon={BookHeart} title={search ? 'Главы не найдены' : 'Первая глава ждёт тебя'} text={search ? 'Попробуй поискать по другому слову.' : 'Начни с небольшой сцены, важного разговора или воспоминания персонажа.'} action={canEdit ? onCreate : undefined} actionLabel="Написать главу" />}
+    {orderedChapters.map(chapter => {
+      const chapterStories = filtered.filter(story => story.chapter_id === chapter.id);
+      const hasSearchMatch = !search && mood === 'Все настроения' ? true : chapterStories.length > 0;
+      if (!hasSearchMatch) return null;
+      return <details className="dynasty-chapter" key={chapter.id} open={Boolean(chapter.is_current) || Boolean(search)}>
+        <summary className="dynasty-chapter-summary">
+          <span className="dynasty-chapter-number">{String(chapter.sort_order || 1).padStart(2,'0')}</span>
+          <span className="dynasty-chapter-heading"><span className="dynasty-chapter-kicker">ПОКОЛЕНИЕ {String(chapter.generation || 1).padStart(2,'0')}{chapter.is_current ? ' · ТЕКУЩЕЕ' : ''}</span><b>{chapter.title}</b>{chapter.description && <small>{chapter.description}</small>}</span>
+          <span className="dynasty-chapter-count">{chapterStories.length} {chapterStories.length === 1 ? 'история' : 'историй'}</span>
+          <ChevronDown className="dynasty-chevron" size={18}/>
+        </summary>
+        {canEdit && <div className="dynasty-chapter-tools"><span>{chapter.is_current ? 'Это поколение отображается в шапке архива' : ' '}</span><div>{!chapter.is_current && <Button variant="soft" onClick={() => onSetCurrentChapter(chapter)}>Сделать текущим</Button>}<IconButton title="Изменить главу династии" onClick={() => onEditChapter(chapter)}><Pencil size={15}/></IconButton><IconButton title="Удалить главу династии" onClick={() => onDeleteChapter(chapter)}><Trash2 size={15}/></IconButton></div></div>}
+        {chapterStories.length ? <div className="story-grid">{chapterStories.map((story, index) => <StoryCard key={story.id} story={story} index={index} onOpen={() => onOpen(story)} onEdit={() => onEdit(story)} onDelete={() => onDelete(story)} canEdit={canEdit}/>)}</div> : <div className="chapter-empty"><BookHeart size={20}/><span>{search || mood !== 'Все настроения' ? 'В этой главе нет историй по выбранному фильтру.' : 'В этой главе пока тихо. Самое время начать первую историю.'}</span>{canEdit && <Button variant="soft" icon={Plus} onClick={() => onCreate()}>Добавить историю</Button>}</div>}
+      </details>;
+    })}
+    {unassigned.length > 0 && <details className="dynasty-chapter unassigned-chapter" open><summary className="dynasty-chapter-summary"><span className="dynasty-chapter-number">✧</span><span className="dynasty-chapter-heading"><span className="dynasty-chapter-kicker">АРХИВ</span><b>Истории без главы</b><small>Можно привязать к главе при редактировании</small></span><span className="dynasty-chapter-count">{unassigned.length}</span><ChevronDown className="dynasty-chevron" size={18}/></summary><div className="story-grid">{unassigned.map((story,index)=><StoryCard key={story.id} story={story} index={index} onOpen={()=>onOpen(story)} onEdit={()=>onEdit(story)} onDelete={()=>onDelete(story)} canEdit={canEdit}/>)}</div></details>}
+    {!orderedChapters.length && !unassigned.length && <EmptyState icon={BookHeart} title={search ? 'Истории не найдены' : 'Первая глава ждёт тебя'} text={search ? 'Попробуй поискать по другому слову.' : 'Создай главу династии, а затем добавь в неё истории.'} action={canEdit ? onCreateChapter : undefined} actionLabel="Создать первую главу"/>}
   </div>;
 }
 function StoryCard({ story, index, onOpen, onEdit, onDelete, canEdit }) {
@@ -776,7 +797,32 @@ function CharacterModal({ record, onClose, onSave, uploadImage, deleteStoredImag
   </Modal>;
 }
 
-function StoryModal({ record, onClose, onSave, uploadImage, deleteStoredImage, notify }) {
+function ChapterModal({ record, chapters = [], onClose, onSave }) {
+  const [form, setForm] = useState(() => ({ ...blankChapter(), ...(record || {}) }));
+  const [error, setError] = useState(''); const [saving, setSaving] = useState(false);
+  const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+  const submit = async event => {
+    event.preventDefault(); setSaving(true); setError('');
+    try { await onSave({ ...form, title: form.title.trim(), description: form.description.trim() }); }
+    catch (e) { setError(e.message || 'Не удалось сохранить главу династии.'); }
+    finally { setSaving(false); }
+  };
+  return <Modal title={record ? 'Редактировать главу династии' : 'Новая глава династии'} subtitle="Каждая глава — отдельное поколение и новый этап семейной истории." onClose={onClose}>
+    <form className="editor-form" onSubmit={submit}>
+      <FormField label="Название главы" value={form.title} onChange={v => set('title', v)} placeholder="Например, Наследие Райанов" required/>
+      <FormField label="Короткое описание" value={form.description} onChange={v => set('description', v)} placeholder="С чего начинается это поколение?" multiline rows={3}/>
+      <div className="form-grid-two">
+        <FormField label="Номер поколения" value={form.generation} onChange={v => set('generation', v)} type="number" required hint="Например, 1 — первое поколение, 2 — второе."/>
+        <FormField label="Порядок главы" value={form.sort_order} onChange={v => set('sort_order', v)} type="number" required hint={`Сейчас глав: ${chapters.length}. Меньшее число отображается выше.`}/>
+      </div>
+      <label className="favorite-toggle"><input type="checkbox" checked={Boolean(form.is_current)} onChange={e => set('is_current', e.target.checked)}/><span className="fake-check"><Star size={14}/></span><span><b>Текущее поколение</b><small>Его номер и название будут отображаться в боковой панели.</small></span></label>
+      {error && <div className="form-error"><CircleHelp size={15}/>{error}</div>}
+      <div className="modal-actions form-actions"><span className="form-actions-spacer"/><Button variant="soft" onClick={onClose}>Отмена</Button><Button type="submit" icon={Save} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить главу'}</Button></div>
+    </form>
+  </Modal>;
+}
+
+function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, deleteStoredImage, notify }) {
   const initialBlocks = record && safeArray(record.blocks).length ? record.blocks : record?.content ? record.content.split(/\n\s*\n/).filter(Boolean).map(text => ({ type: 'paragraph', text })) : [{ type: 'paragraph', text: '' }];
   const [form, setForm] = useState(() => ({ ...blankStory(), ...(record || {}), tags: safeArray(record?.tags), blocks: initialBlocks }));
   const [busyBlock, setBusyBlock] = useState(''); const [saveBusy, setSaveBusy] = useState(false); const [error, setError] = useState(''); const [removedUrls, setRemovedUrls] = useState([]);
@@ -801,7 +847,7 @@ function StoryModal({ record, onClose, onSave, uploadImage, deleteStoredImage, n
   };
   const BLOCK_LABELS = { paragraph: 'Абзац', heading: 'Подзаголовок', quote: 'Цитата', image: 'Фотография' };
   return <Modal title={record ? 'Редактировать главу' : 'Новая глава'} subtitle="Собери историю из текста, фотографий и маленьких деталей." onClose={onClose} wide>
-    <form className="editor-form story-editor-form" onSubmit={submit}><div className="form-grid-two"><FormField label="Название главы" value={form.title} onChange={v => setForm(p => ({...p,title:v}))} placeholder="Например, Дом, в котором горит свет" required/><FormField label="Подзаголовок" value={form.subtitle} onChange={v => setForm(p => ({...p,subtitle:v}))} placeholder="Глава 01 · Начало чего-то нового"/></div><div className="form-grid-two"><SelectField label="Настроение главы" value={form.mood} onChange={v => setForm(p => ({...p,mood:v}))} options={['Нежность','Ностальгия','Тайна','Драма','Романтика','Радость','Грусть','Надежда','Хаос','Напряжение']}/><FormField label="Цитата главы" value={form.quote} onChange={v => setForm(p => ({...p,quote:v}))} placeholder="Одна фраза, которую хочется запомнить…"/></div>
+    <form className="editor-form story-editor-form" onSubmit={submit}><div className="form-grid-two"><FormField label="Название главы" value={form.title} onChange={v => setForm(p => ({...p,title:v}))} placeholder="Например, Дом, в котором горит свет" required/><FormField label="Подзаголовок" value={form.subtitle} onChange={v => setForm(p => ({...p,subtitle:v}))} placeholder="Глава 01 · Начало чего-то нового"/></div><label className="form-field"><span>Глава династии / поколение</span><select value={form.chapter_id || ''} onChange={e => setForm(p => ({...p, chapter_id: e.target.value || null}))}><option value="">Без главы — общий архив</option>{chapters.slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0)).map(chapter => <option key={chapter.id} value={chapter.id}>Поколение {chapter.generation || 1} · {chapter.title}</option>)}</select><small>История появится внутри выбранной главы.</small></label><div className="form-grid-two"><SelectField label="Настроение главы" value={form.mood} onChange={v => setForm(p => ({...p,mood:v}))} options={['Нежность','Ностальгия','Тайна','Драма','Романтика','Радость','Грусть','Надежда','Хаос','Напряжение']}/><FormField label="Цитата главы" value={form.quote} onChange={v => setForm(p => ({...p,quote:v}))} placeholder="Одна фраза, которую хочется запомнить…"/></div>
       <div className="form-section-heading"><span>✧</span><div><b>Конструктор главы</b><small>Добавляй блоки и меняй их порядок — как в журнальной статье.</small></div></div>
       <div className="story-block-list">{form.blocks.map((block,index) => <div className={`story-block-editor block-${block.type}`} key={`${index}-${block.type}`}><div className="story-block-editor-head"><div className="block-grip"><Grip size={15}/><span>{String(index+1).padStart(2,'0')}</span></div><span className="block-type-label">{block.type === 'heading' ? <><span>H</span> Подзаголовок</> : block.type === 'paragraph' ? <><Feather size={13}/> Абзац</> : block.type === 'quote' ? <><Quote size={13}/> Цитата</> : <><ImagePlus size={13}/> Фотография</>}</span><div className="block-move-actions"><IconButton title="Выше" disabled={index===0} onClick={() => moveBlock(index,-1)}><ChevronLeft className="rotate-minus" size={14}/></IconButton><IconButton title="Ниже" disabled={index===form.blocks.length-1} onClick={() => moveBlock(index,1)}><ChevronRight className="rotate-plus" size={14}/></IconButton><IconButton title="Удалить блок" onClick={() => removeBlock(index)}><Trash2 size={14}/></IconButton></div></div>
         {block.type === 'image' ? <div className="image-block-editor">{block.url ? <div className="image-block-preview"><img src={block.url} alt={block.alt || ''}/><button type="button" onClick={() => { setRemovedUrls(prev => [...prev, block.url]); updateBlock(index,{url:''}); }}><Trash2 size={13}/> Убрать фото</button></div> : <label className="image-dropzone"><ImagePlus size={23}/><b>{busyBlock === String(index) ? 'Загружаем фото…' : 'Добавить фотографию'}</b><span>Нажми, чтобы выбрать файл с устройства · до 15 МБ</span><input type="file" accept="image/*" disabled={Boolean(busyBlock)} onChange={e => { uploadBlock(index,e.target.files?.[0]); e.target.value=''; }}/></label>}<FormField label="Подпись к фотографии" value={block.caption || ''} onChange={v => updateBlock(index,{caption:v})} placeholder="Где, когда и почему этот кадр важен?"/></div> : <FormField label={block.type === 'heading' ? 'Заголовок раздела' : block.type === 'quote' ? 'Текст цитаты' : 'Текст абзаца'} value={block.text || ''} onChange={v => updateBlock(index,{text:v})} placeholder={block.type === 'heading' ? 'Новая сцена…' : block.type === 'quote' ? 'Слова, которые останутся с читателем…' : 'Пиши свободно. Абзац может быть длинным…'} multiline rows={block.type === 'paragraph' ? 5 : 2}/>}</div>)}</div>
