@@ -1118,3 +1118,9 @@ button:disabled { opacity: .48; cursor: not-allowed; }
 .inline-image-remove { position:absolute; top:10px; right:10px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(54,37,47,.75); color:white; font-size:21px; line-height:1; cursor:pointer; opacity:.2; transition:opacity .15s ease; }
 .inline-story-editor figure:hover .inline-image-remove { opacity:1; }
 @media (max-width:640px) { .inline-story-editor { min-height:260px; padding:15px; font-size:13px; } .inline-story-toolbar button { padding:7px 8px; font-size:10px; } .inline-image-remove { opacity:.9; } }
+
+.inline-story-editor[contenteditable="true"]:focus { border-color: #d7a6b9; }
+.inline-story-editor.is-drop-target { outline: 2px dashed #cb8ba6; outline-offset: -7px; background: #fff6f9; }
+.inline-story-image.is-uploading { opacity: .78; }
+.inline-image-status { display: block; padding: 7px 10px; color: #9a6d81; font-size: 11px; text-align: center; }
+.inline-story-editor[contenteditable="true"]:empty:before { content: attr(data-placeholder); color: #b9a4ae; pointer-events: none; }
