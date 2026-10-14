@@ -476,6 +476,9 @@ setData(prev => ({
       for (const c of prepared.characters || []) c.portrait_url = await restoreUrl(c.portrait_url, 'characters');
       for (const story of prepared.stories || []) story.blocks = await Promise.all(safeArray(story.blocks).map(async b => b.type === 'image' ? { ...b, url: await restoreUrl(b.url, 'stories') } : b));
       if (supabase) {
+        // Upsert chapters before stories so chapter_id foreign keys are valid.
+        for (const chapter of prepared.chapters || []) { const { error } = await supabase.from('chapters').upsert({ ...chapter, is_current: false }); if (error) throw error; }
+        for (const chapter of prepared.chapters || []) if (chapter.is_current) { const { error } = await supabase.from('chapters').update({ is_current: true }).eq('id', chapter.id); if (error) throw error; }
         // Upsert parent entities first, then links and positions.
         for (const c of prepared.characters || []) { const { error } = await supabase.from('characters').upsert(c); if (error) throw error; }
         for (const s of prepared.stories || []) { const { error } = await supabase.from('stories').upsert(s); if (error) throw error; }
@@ -824,7 +827,7 @@ function ChapterModal({ record, chapters = [], onClose, onSave }) {
 
 function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, deleteStoredImage, notify }) {
   const initialBlocks = record && safeArray(record.blocks).length ? record.blocks : record?.content ? record.content.split(/\n\s*\n/).filter(Boolean).map(text => ({ type: 'paragraph', text })) : [{ type: 'paragraph', text: '' }];
-  const [form, setForm] = useState(() => ({ ...blankStory(), ...(record || {}), tags: safeArray(record?.tags), blocks: initialBlocks }));
+  const [form, setForm] = useState(() => ({ ...blankStory(), ...(record || {}), chapter_id: record?.chapter_id || chapters.find(chapter => chapter.is_current)?.id || null, tags: safeArray(record?.tags), blocks: initialBlocks }));
   const [busyBlock, setBusyBlock] = useState(''); const [saveBusy, setSaveBusy] = useState(false); const [error, setError] = useState(''); const [removedUrls, setRemovedUrls] = useState([]);
   const updateBlock = (index, change) => setForm(prev => ({ ...prev, blocks: prev.blocks.map((b,i) => i === index ? { ...b, ...change } : b) }));
   const addBlock = (type) => setForm(prev => ({ ...prev, blocks: [...prev.blocks, type === 'image' ? { type, url: '', caption: '', alt: '' } : { type, text: '' }] }));
