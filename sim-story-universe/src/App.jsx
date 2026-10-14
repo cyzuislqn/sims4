@@ -897,29 +897,47 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
   };
   const addImageAtCursor = async file => {
     if (!file) return;
-    if (!file.type.startsWith('image/')) { setError('Выбери файл изображения.'); return; }
+    if (!file.type?.startsWith('image/')) { setError('Выбери файл изображения.'); return; }
     if (file.size > 15 * 1024 * 1024) { setError('Фото должно быть не больше 15 МБ.'); return; }
-    setBusyImage(true); setError('');
+    saveSelection(); setBusyImage(true); setError('');
+    let previewUrl = '';
+    let figure = null;
     try {
-      const url = await uploadImage(file, 'stories/' + (form.id || 'new'));
+      previewUrl = URL.createObjectURL(file);
       restoreSelection();
       const selection = window.getSelection();
       const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
-      const figure = document.createElement('figure');
-      figure.className = 'inline-story-image'; figure.dataset.url = url;
-      const img = document.createElement('img'); img.src = url; img.alt = file.name;
+      figure = document.createElement('figure');
+      figure.className = 'inline-story-image is-uploading';
+      const img = document.createElement('img'); img.src = previewUrl; img.alt = file.name || 'Фотография';
       const caption = document.createElement('figcaption'); caption.contentEditable = 'true'; caption.dataset.placeholder = 'Подпись к фотографии…';
+      const status = document.createElement('span'); status.className = 'inline-image-status'; status.textContent = 'Загружаю фото…';
       const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'inline-image-remove'; remove.contentEditable = 'false'; remove.dataset.removeImage = 'true'; remove.setAttribute('aria-label','Удалить фото'); remove.textContent = '×';
-      figure.append(img, caption, remove);
+      figure.append(img, caption, status, remove);
       if (range && editorRef.current?.contains(range.commonAncestorContainer)) {
         range.deleteContents(); range.insertNode(figure);
         const spacer = document.createElement('p'); spacer.innerHTML = '<br>'; figure.after(spacer);
         const nextRange = document.createRange(); nextRange.selectNodeContents(spacer); nextRange.collapse(true);
         selection.removeAllRanges(); selection.addRange(nextRange); savedRangeRef.current = nextRange.cloneRange();
-      } else editorRef.current?.append(figure, document.createElement('p'));
-      notify('Фото вставлено прямо в текст ✨'); editorRef.current?.focus();
-    } catch (e) { setError(e.message || 'Не удалось загрузить фото.'); }
-    finally { setBusyImage(false); if (imageInputRef.current) imageInputRef.current.value = ''; }
+      } else {
+        editorRef.current?.append(figure);
+        const spacer = document.createElement('p'); spacer.innerHTML = '<br>'; editorRef.current?.append(spacer);
+        const nextRange = document.createRange(); nextRange.selectNodeContents(spacer); nextRange.collapse(true);
+        selection?.removeAllRanges(); selection?.addRange(nextRange); savedRangeRef.current = nextRange.cloneRange();
+      }
+      editorRef.current?.focus();
+      const url = await uploadImage(file, 'stories/' + (form.id || 'new'));
+      figure.dataset.url = url; img.src = url; figure.classList.remove('is-uploading'); status.remove();
+      URL.revokeObjectURL(previewUrl);
+      notify('Фото добавлено в текст ✨');
+    } catch (e) {
+      if (figure?.isConnected) figure.remove();
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setError(e.message || 'Не удалось загрузить фото. Проверь вход в аккаунт и доступ к хранилищу.');
+    } finally {
+      setBusyImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
   };
   const placeCaretAtPoint = e => {
     const doc = editorRef.current?.ownerDocument;
