@@ -923,3 +923,46 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   .relation-person .avatar-sm { width: 36px; height: 36px; }
   .modal-head h2 { font-size: 21px; }
 }
+
+
+/* Dynasty chapters and generation archive */
+.chapter-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin: 20px 0 16px; padding: 16px 18px; border: 1px solid var(--line, #eadde1);
+  border-radius: 18px; background: rgba(255,255,255,.64);
+}
+.chapter-toolbar > div { color: var(--muted, #8d7881); font-size: 13px; }
+.chapter-toolbar > div b { color: var(--ink, #4f3541); }
+.dynasty-chapter { margin: 18px 0; overflow: hidden; border: 1px solid #eadde2; border-radius: 22px; background: rgba(255,255,255,.66); box-shadow: 0 8px 28px rgba(87,48,65,.035); }
+.dynasty-chapter[open] { border-color: #e3c7d1; }
+.dynasty-chapter-summary { display: flex; align-items: center; gap: 16px; padding: 20px 22px; cursor: pointer; list-style: none; }
+.dynasty-chapter-summary::-webkit-details-marker { display: none; }
+.dynasty-chapter-number { display: grid; flex: 0 0 48px; width: 48px; height: 48px; place-items: center; border-radius: 16px; background: #f7e9ef; color: #a15e7a; font-family: Georgia, serif; font-size: 19px; }
+.dynasty-chapter-heading { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }
+.dynasty-chapter-kicker { color: #b27c92; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.dynasty-chapter-heading > b { color: #4f3541; font-family: Georgia, serif; font-size: 20px; font-weight: 500; }
+.dynasty-chapter-heading > small { color: #8c7b83; font-size: 12px; line-height: 1.5; }
+.dynasty-chapter-count { flex-shrink: 0; color: #9b8790; font-size: 12px; }
+.dynasty-chevron { flex-shrink: 0; color: #b17a91; transition: transform .2s ease; }
+.dynasty-chapter[open] .dynasty-chevron { transform: rotate(180deg); }
+.dynasty-chapter-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 22px 16px 86px; color: #9a8790; font-size: 11px; }
+.dynasty-chapter-tools > div { display: flex; align-items: center; gap: 6px; }
+.dynasty-chapter-tools .btn { padding: 8px 12px; font-size: 11px; }
+.dynasty-chapter > .story-grid { padding: 0 18px 20px; }
+.chapter-empty { display: flex; align-items: center; gap: 12px; padding: 18px 22px 22px; color: #9b8790; font-size: 13px; }
+.chapter-empty > svg { flex-shrink: 0; color: #c28ba1; }
+.chapter-empty > span { flex: 1; }
+.unassigned-chapter { border-style: dashed; background: rgba(255,255,255,.42); }
+.unassigned-chapter .dynasty-chapter-number { background: #f1eef0; color: #94838c; }
+@media (max-width: 640px) {
+  .chapter-toolbar { align-items: flex-start; flex-direction: column; }
+  .chapter-toolbar .btn { width: 100%; justify-content: center; }
+  .dynasty-chapter-summary { gap: 10px; padding: 15px 13px; }
+  .dynasty-chapter-number { flex-basis: 38px; width: 38px; height: 38px; border-radius: 12px; font-size: 16px; }
+  .dynasty-chapter-heading > b { font-size: 17px; }
+  .dynasty-chapter-count { font-size: 10px; }
+  .dynasty-chapter-tools { align-items: flex-start; flex-direction: column; padding: 0 13px 14px; }
+  .dynasty-chapter-tools > div { flex-wrap: wrap; }
+  .dynasty-chapter > .story-grid { padding: 0 10px 14px; }
+  .chapter-empty { align-items: flex-start; flex-wrap: wrap; padding: 14px; }
+}
