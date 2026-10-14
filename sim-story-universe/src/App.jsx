@@ -140,10 +140,24 @@ function TagsField({ label = 'Теги', value = [], onChange, placeholder = 'д
 export default function App() {
   const [data, setData] = useState(() => {
     if (isSupabaseConfigured) return Object.fromEntries(TABLES.map(t => [t, []]));
-    try {
-      const cached = localStorage.getItem('ssu-demo-data-v1');
-      return cached ? { ...demoData(), ...JSON.parse(cached) } : demoData();
-    } catch { return demoData(); }
+    
+try {
+  const cached = localStorage.getItem('ssu-demo-data-v1');
+  if (!cached) return demoData();
+
+  const merged = { ...demoData(), ...JSON.parse(cached) };
+
+  for (const table of TABLES) {
+    merged[table] = safeArray(merged[table])
+      .flat(Infinity)
+      .filter(row => row && typeof row === 'object' && !Array.isArray(row));
+  }
+
+  return merged;
+} catch {
+  return demoData();
+}
+
   });
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState('home');
