@@ -1325,3 +1325,161 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   stroke-width: 2.3;
   opacity: .95;
 }
+
+
+/* Relationship dynamics: five editable emotional scales */
+.relationship-scales-editor {
+  margin: 17px 0 20px;
+  padding: 16px 17px 13px;
+  border: 1px solid #eadde3;
+  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(255,255,255,.86), rgba(250,239,244,.68));
+}
+.relationship-scales-editor .form-section-heading { margin: 0 0 13px; }
+.relationship-scale-control {
+  display: grid;
+  grid-template-columns: 92px minmax(0,1fr) 34px;
+  align-items: center;
+  gap: 12px;
+  margin: 11px 0;
+  color: #8e6c7c;
+  font-size: 12px;
+}
+.relationship-scale-label { font-weight: 600; }
+.relationship-scale-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--scale-color, #c78aa4);
+  cursor: pointer;
+}
+.relationship-scale-control > b {
+  display: grid;
+  place-items: center;
+  min-width: 31px;
+  padding: 4px 5px;
+  border: 1px solid #eadde3;
+  border-radius: 7px;
+  background: #fff;
+  color: #805d70;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.relationship-scales-preview {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 8px;
+  margin: 0 0 13px;
+}
+.relationship-scale-mini { min-width: 0; }
+.relationship-scale-mini > span {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 4px;
+  color: #a18895;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.relationship-scale-mini > i {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #f0e7eb;
+}
+.relationship-scale-mini > i > b { display: block; height: 100%; border-radius: inherit; }
+
+@media (max-width: 640px) {
+  .relationship-scale-control { grid-template-columns: 75px minmax(0,1fr) 30px; gap: 7px; font-size: 11px; }
+  .relationship-scales-editor { padding: 13px 11px 10px; }
+  .relationship-scales-preview { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px 10px; }
+}
+
+/* Mourning treatment for deceased Sims: grayscale portrait, centered mark, black ribbon */
+.character-card-main { position: relative; }
+.character-card-dead .character-portrait,
+.character-card-dead .character-portrait > .avatar,
+.character-card-dead .character-card-background {
+  filter: grayscale(1) saturate(.3);
+}
+.character-card-dead:not(.has-portrait-image) .character-card-main { background: #e9e5e7; }
+.death-stamp {
+  position: absolute;
+  z-index: 5;
+  top: 43%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  padding: 7px 18px;
+  border: 2px solid currentColor;
+  background: rgba(28, 24, 27, .76);
+  color: #fff;
+  font: 700 19px/1 var(--sans);
+  letter-spacing: .19em;
+  text-shadow: 0 1px 3px rgba(0,0,0,.28);
+  pointer-events: none;
+}
+.death-ribbon {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  right: 14px;
+  width: 19px;
+  height: 53px;
+  background: linear-gradient(90deg, #050505, #292529 55%, #080808);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 79%, 0 100%);
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  pointer-events: none;
+}
+.character-card-dead .character-card-info { filter: grayscale(.55); }
+.detail-portrait { position: relative; overflow: hidden; }
+.detail-portrait.is-dead > .avatar { filter: grayscale(1); }
+.detail-portrait .death-stamp {
+  top: 48%;
+  font-size: 15px;
+  padding: 7px 12px;
+}
+.detail-portrait .death-ribbon { right: 18px; width: 22px; height: 62px; }
+.character-death-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 15px 17px;
+  border: 1px solid #d8d0d4;
+  border-radius: 13px;
+  background: linear-gradient(120deg, #f1edef, #e7e2e5);
+  color: #655b61;
+}
+.character-death-notice > span { color: #766a71; font-size: 24px; line-height: 1; }
+.character-death-notice b { display: block; margin-bottom: 5px; font-size: 11px; letter-spacing: .15em; }
+.character-death-notice p { margin: 0; color: #83777e; font-size: 12px; line-height: 1.6; }
+.character-detail-dead .detail-main-column > .detail-section:first-of-type { filter: saturate(.72); }
+
+/* Deceased characters on the family tree */
+.tree-node-dead {
+  border-color: #cfc7cb !important;
+  background: rgba(233,229,232,.96) !important;
+  box-shadow: 0 3px 11px rgba(54,44,50,.09) !important;
+}
+.tree-node-dead .tree-node-main .avatar,
+.tree-node-dead .tree-node-main .avatar img { filter: grayscale(1); }
+.tree-node-dead .tree-node-main strong,
+.tree-node-dead .tree-node-main small,
+.tree-node-dead .tree-node-top { color: #81777d !important; }
+.tree-death-stamp {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  padding: 4px 9px;
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 2px;
+  background: rgba(35,31,34,.8);
+  color: #fff;
+  font: 700 13px/1 var(--sans);
+  letter-spacing: .12em;
+  pointer-events: none;
+}
+.tree-node-secondary .tree-death-stamp { padding: 2px 4px; font-size: 7px; letter-spacing: .04em; }
+.tree-death-ribbon { right: 8px; width: 12px; height: 30px; }
+.tree-node-secondary .tree-death-ribbon { right: 6px; width: 8px; height: 21px; }
