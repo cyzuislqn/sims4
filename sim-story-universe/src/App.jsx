@@ -37,7 +37,31 @@ const REL_COLORS = {
   'брат/сестра': '#b4a0d1', друг: '#80b7aa', бывший: '#b59b93', 'тайная связь': '#be7f9c',
   партнёр: '#d9a35d', родственник: '#a3a1b9',
 };
-const REL_DASH = { 'тайная связь': '8 7', бывший: '3 7', друг: '10 5', 'брат/сестра': '4 4' };
+const REL_DASH = { 'тайная связь': '8 7', бывший: '3 7', друг: '10 5', 'брат/сестра': '4 4', мама: '', папа: '', жена: '', муж: '', ребёнок: '' };
+
+const RELATION_REVERSE = {
+  мама: 'ребёнок', папа: 'ребёнок', ребёнок: 'родитель',
+  жена: 'муж', муж: 'жена', 'брат/сестра': 'брат/сестра',
+  друг: 'друг', бывший: 'бывшая', 'тайная связь': 'тайная связь',
+  партнёр: 'партнёр', родственник: 'родственник',
+};
+const relationLabelForCharacter = (relationship, characterId) => {
+  const isFrom = relationship.from_character === characterId;
+  const type = relationship.type || 'родственник';
+  if (type === 'мама' || type === 'папа') {
+    if (isFrom) return type;
+    const person = type === 'мама' ? 'мать' : 'отец';
+    return person;
+  }
+  if (type === 'ребёнок') return isFrom ? 'Ребёнок' : 'Родитель';
+  if (type === 'жена' || type === 'муж') return 'Супруги';
+  if (type === 'бывший') return isFrom ? 'Бывший/бывшая' : 'Бывший/бывшая';
+  return type.charAt(0).toLocaleUpperCase('ru-RU') + type.slice(1);
+};
+const isSecondaryCharacter = (character) => {
+  const kind = String(character?.character_type || '').toLocaleLowerCase('ru-RU');
+  return kind.includes('побоч') || kind.includes('второстеп');
+};
 const blankCharacter = () => ({
   name: '', age: '', appearance: '', personality: '', traits: [], career: '', hobbies: '',
   fears: '', dreams: '', biography: '', secrets: '', tags: [], portrait_url: '', is_favorite: false,
@@ -679,7 +703,11 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
     const saved = treeRows.find(r => r.character_id === c.id);
     return [c.id, { x: Number(saved?.x ?? fallbackPositions[c.id]?.x ?? 120), y: Number(saved?.y ?? fallbackPositions[c.id]?.y ?? 120) }];
   })), [characters, treeRows, fallbackPositions]);
-  const center = (id) => positions[id] ? { x: positions[id].x + 116, y: positions[id].y + 71 } : null;
+  const center = (id) => {
+    const character = characters.find(c => c.id === id);
+    const compact = isSecondaryCharacter(character);
+    return positions[id] ? { x: positions[id].x + (compact ? 88 : 116), y: positions[id].y + (compact ? 53 : 71) } : null;
+  };
   const relsToDraw = relationships.filter(r => positions[r.from_character] && positions[r.to_character]);
 
   useEffect(() => {
@@ -729,18 +757,21 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
       <div className="tree-world" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
         <svg className="tree-lines" width="2300" height="1450" viewBox="0 0 2300 1450" aria-label="Линии семейных связей">{relsToDraw.map(r => {
           const a = center(r.from_character); const b = center(r.to_character); const color = REL_COLORS[r.type] || '#d19bae';
-          const actualA = drag?.kind === 'node' && drag.characterId === r.from_character ? { x: drag.currentX + 116, y: drag.currentY + 71 } : a;
-          const actualB = drag?.kind === 'node' && drag.characterId === r.to_character ? { x: drag.currentX + 116, y: drag.currentY + 71 } : b;
+          const centerOffset = (id) => isSecondaryCharacter(characters.find(c => c.id === id)) ? { x: 88, y: 53 } : { x: 116, y: 71 };
+          const offsetA = centerOffset(r.from_character); const offsetB = centerOffset(r.to_character);
+          const actualA = drag?.kind === 'node' && drag.characterId === r.from_character ? { x: drag.currentX + offsetA.x, y: drag.currentY + offsetA.y } : a;
+          const actualB = drag?.kind === 'node' && drag.characterId === r.to_character ? { x: drag.currentX + offsetB.x, y: drag.currentY + offsetB.y } : b;
           const dx = actualB.x - actualA.x; const dy = actualB.y - actualA.y;
           const path = `M ${actualA.x} ${actualA.y} C ${actualA.x + dx*0.36} ${actualA.y + dy*0.08}, ${actualB.x - dx*0.36} ${actualB.y - dy*0.08}, ${actualB.x} ${actualB.y}`;
           const labelX = (actualA.x + actualB.x)/2; const labelY = (actualA.y + actualB.y)/2 - 8;
-          return <g key={r.id} className="tree-edge" onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{r.type}</text></g>;
+          return <g key={r.id} className="tree-edge" onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
         })}</svg>
         {characters.map((c, i) => {
           const p = positionFor(c.id) || { x: 80 + (i%3)*340, y: 90 + Math.floor(i/3)*220 };
           const connected = relationships.filter(r => r.from_character === c.id || r.to_character === c.id).length;
-          return <div key={c.id} className={`tree-node ${drag?.kind === 'node' && drag.characterId === c.id ? 'dragging' : ''}`} style={{ left: `${p.x}px`, top: `${p.y}px` }} onPointerDown={(e) => startNodeDrag(e, c)}>
-            <div className="tree-node-top"><span>✿ CHARACTER FILE</span>{c.is_favorite && <Star size={12} fill="currentColor"/>}</div><button className="tree-node-main" onClick={(e) => { if (drag) return; e.stopPropagation(); openCharacter(c); }}><Avatar character={c} size="sm"/><span><strong>{c.name}</strong><small>{c.age || 'Возраст неизвестен'}</small></span><ChevronRight size={15}/></button><div className="tree-node-bottom"><span><Link2 size={12}/>{connected} связи</span><span>{c.career || 'история продолжается'}</span></div><span className="tree-node-handle tl"/><span className="tree-node-handle tr"/><span className="tree-node-handle bl"/><span className="tree-node-handle br"/></div>;
+          const secondary = isSecondaryCharacter(c);
+          return <div key={c.id} className={`tree-node ${secondary ? 'tree-node-secondary' : 'tree-node-primary'} ${drag?.kind === 'node' && drag.characterId === c.id ? 'dragging' : ''}`} style={{ left: `${p.x}px`, top: `${p.y}px` }} onPointerDown={(e) => startNodeDrag(e, c)}>
+            <div className="tree-node-top"><span>{secondary ? '✦ STORY CONNECTION' : '✿ FAMILY ARCHIVE'}</span>{c.is_favorite && <Star size={12} fill="currentColor"/>}</div><button className="tree-node-main" onClick={(e) => { if (drag) return; e.stopPropagation(); openCharacter(c); }}><Avatar character={c} size="sm"/><span><strong>{c.name}</strong><small>{secondary ? (c.character_type || 'Второстепенный персонаж') : (c.age || 'Возраст неизвестен')}</small></span><ChevronRight size={15}/></button><div className="tree-node-bottom"><span><Link2 size={12}/>{connected} связи</span>{!secondary && <span>{c.career || 'история продолжается'}</span>}</div><span className="tree-node-handle tl"/><span className="tree-node-handle tr"/><span className="tree-node-handle bl"/><span className="tree-node-handle br"/></div>;
         })}
         {!characters.length && <div className="tree-empty"><div>✧</div><h3>Здесь вырастет твоё древо</h3><p>Добавь персонажей, а затем соедини их отношениями.</p></div>}
       </div>
@@ -1053,7 +1084,7 @@ function BackupModal({ canEdit, busy, onClose, onExport, onImport }) {
 function CharacterDetail({ character: c, relationships, characters, canEdit, onEdit, onClose, onSelect }) {
   const connected = relationships.filter(r => r.from_character === c.id || r.to_character === c.id);
   const relCharacter = r => characters.find(x => x.id === (r.from_character === c.id ? r.to_character : r.from_character));
-  return <Modal title={c.name || 'Досье персонажа'} subtitle={c.age || 'Личное дело из архива династии'} onClose={onClose} wide><div className="character-detail"><div className="detail-portrait-column"><div className="detail-portrait"><Avatar character={c} size="xxl"/><span>SIM STORY UNIVERSE · CHARACTER FILE</span></div><div className="detail-mini-note"><Quote size={16}/><p>{c.dreams ? `«${c.dreams}»` : 'У каждого персонажа есть мечта, даже если он пока не может назвать её вслух.'}</p></div>{canEdit && <Button icon={Pencil} onClick={() => onEdit(c)}>Редактировать досье</Button>}</div><div className="detail-main-column"><div className="detail-section"><div className="eyebrow">✦ THE BASICS</div><h3>Личность и характер</h3>{c.personality && <p className="detail-lead">{c.personality}</p>}{c.appearance && <div className="detail-info-row"><span>Внешность</span><p>{c.appearance}</p></div>}{c.career && <div className="detail-info-row"><span>Работа</span><p>{c.career}</p></div>}{c.hobbies && <div className="detail-info-row"><span>Увлечения</span><p>{c.hobbies}</p></div>}{safeArray(c.traits).length > 0 && <div className="detail-info-row"><span>Черты</span><div className="trait-row">{c.traits.map(t => <span key={t}>{t}</span>)}</div></div>}</div>{c.biography && <div className="detail-section"><div className="eyebrow">✦ A LIFE IN WORDS</div><h3>Биография</h3><p className="detail-prose">{c.biography}</p></div>}<div className="detail-grid-two">{c.fears && <div className="detail-secret-card fear-card"><span>☾ Чего боится</span><p>{c.fears}</p></div>}{c.dreams && <div className="detail-secret-card dream-card"><span>✧ О чём мечтает</span><p>{c.dreams}</p></div>}</div>{c.secrets && <div className="detail-section secret-section"><div className="eyebrow"><LockKeyhole size={13}/> A LITTLE SECRET</div><h3>Секреты</h3><p>{c.secrets}</p></div>}{safeArray(c.tags).length>0 && <div className="detail-tags">{c.tags.map(t => <TagPill key={t}>{t}</TagPill>)}</div>}<div className="detail-section"><div className="section-title"><h3>Связи персонажа</h3><span className="muted-count">{connected.length}</span></div>{connected.length ? <div className="detail-relations">{connected.map(r => { const other = relCharacter(r); return <button key={r.id} className="detail-relation-row" onClick={() => other && onSelect(other)}><Avatar character={other} size="sm"/><span><b>{other?.name || 'Персонаж удалён'}</b><small>{r.type} · {r.status || 'Активна'}</small></span><span className="detail-rel-type" style={{ color: REL_COLORS[r.type] || '#d19bae' }}>{r.type}</span><ChevronRight size={15}/></button>; })}</div> : <p className="muted-copy">У этого персонажа пока нет прописанных связей.</p>}</div></div></div></Modal>;
+  return <Modal title={c.name || 'Досье персонажа'} subtitle={c.age || 'Личное дело из архива династии'} onClose={onClose} wide><div className="character-detail"><div className="detail-portrait-column"><div className="detail-portrait"><Avatar character={c} size="xxl"/><span>SIM STORY UNIVERSE · CHARACTER FILE</span></div><div className="detail-mini-note"><Quote size={16}/><p>{c.dreams ? `«${c.dreams}»` : 'У каждого персонажа есть мечта, даже если он пока не может назвать её вслух.'}</p></div>{canEdit && <Button icon={Pencil} onClick={() => onEdit(c)}>Редактировать досье</Button>}</div><div className="detail-main-column"><div className="detail-section"><div className="eyebrow">✦ THE BASICS</div><h3>Личность и характер</h3>{c.personality && <p className="detail-lead">{c.personality}</p>}{c.appearance && <div className="detail-info-row"><span>Внешность</span><p>{c.appearance}</p></div>}{c.career && <div className="detail-info-row"><span>Работа</span><p>{c.career}</p></div>}{c.hobbies && <div className="detail-info-row"><span>Увлечения</span><p>{c.hobbies}</p></div>}{safeArray(c.traits).length > 0 && <div className="detail-info-row"><span>Черты</span><div className="trait-row">{c.traits.map(t => <span key={t}>{t}</span>)}</div></div>}</div>{c.biography && <div className="detail-section"><div className="eyebrow">✦ A LIFE IN WORDS</div><h3>Биография</h3><p className="detail-prose">{c.biography}</p></div>}<div className="detail-grid-two">{c.fears && <div className="detail-secret-card fear-card"><span>☾ Чего боится</span><p>{c.fears}</p></div>}{c.dreams && <div className="detail-secret-card dream-card"><span>✧ О чём мечтает</span><p>{c.dreams}</p></div>}</div>{c.secrets && <div className="detail-section secret-section"><div className="eyebrow"><LockKeyhole size={13}/> A LITTLE SECRET</div><h3>Секреты</h3><p>{c.secrets}</p></div>}{safeArray(c.tags).length>0 && <div className="detail-tags">{c.tags.map(t => <TagPill key={t}>{t}</TagPill>)}</div>}<div className="detail-section"><div className="section-title"><h3>Связи персонажа</h3><span className="muted-count">{connected.length}</span></div>{connected.length ? <div className="detail-relations">{connected.map(r => { const other = relCharacter(r); return <button key={r.id} className="detail-relation-row" onClick={() => other && onSelect(other)}><Avatar character={other} size="sm"/><span><b>{other?.name || 'Персонаж удалён'}</b><small>{relationLabelForCharacter(r, c.id)} · {r.status || 'Активна'}</small></span><span className="detail-rel-type" style={{ color: REL_COLORS[r.type] || '#d19bae' }}>{relationLabelForCharacter(r, c.id)}</span><ChevronRight size={15}/></button>; })}</div> : <p className="muted-copy">У этого персонажа пока нет прописанных связей.</p>}</div></div></div></Modal>;
 }
 
 function StoryReader({ story: s, canEdit, onEdit, onClose }) {
