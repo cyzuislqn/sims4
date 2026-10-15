@@ -956,42 +956,262 @@ function ChapterModal({ record, chapters = [], onClose, onSave }) {
   </Modal>;
 }
 
+const STORY_DRAFT_DB_NAME = 'sim-story-universe-drafts';
+const STORY_DRAFT_STORE_NAME = 'drafts';
+function openStoryDraftDb() {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined' || !window.indexedDB) { reject(new Error('IndexedDB недоступен')); return; }
+    const request = window.indexedDB.open(STORY_DRAFT_DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(STORY_DRAFT_STORE_NAME)) request.result.createObjectStore(STORY_DRAFT_STORE_NAME, { keyPath: 'key' });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('Не удалось открыть черновики'));
+  });
+}
+async function readStoryDraft(key) {
+  try {
+    const db = await openStoryDraftDb();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORY_DRAFT_STORE_NAME, 'readonly');
+      const request = tx.objectStore(STORY_DRAFT_STORE_NAME).get(key);
+      request.onsuccess = () => resolve(request.result?.value || null);
+      request.onerror = () => reject(request.error);
+      tx.oncomplete = () => db.close();
+      tx.onerror = () => { db.close(); reject(tx.error); };
+    });
+  } catch {
+    try { return JSON.parse(window.localStorage.getItem(key) || 'null'); } catch { return null; }
+  }
+}
+async function writeStoryDraft(key, value) {
+  try {
+    const db = await openStoryDraftDb();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORY_DRAFT_STORE_NAME, 'readwrite');
+      tx.objectStore(STORY_DRAFT_STORE_NAME).put({ key, value });
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+      tx.onabort = () => { db.close(); reject(tx.error); };
+    });
+  } catch {
+    try { window.localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  }
+}
+async function deleteStoryDraft(key) {
+  try {
+    const db = await openStoryDraftDb();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORY_DRAFT_STORE_NAME, 'readwrite');
+      tx.objectStore(STORY_DRAFT_STORE_NAME).delete(key);
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+      tx.onabort = () => { db.close(); reject(tx.error); };
+    });
+  } catch {
+    try { window.localStorage.removeItem(key); } catch {}
+  }
+}
+
 function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, deleteStoredImage, notify }) {
   const initialBlocks = record && safeArray(record.blocks).length ? record.blocks : record?.content ? record.content.split(/\n\s*\n/).filter(Boolean).map(text => ({ type: 'paragraph', text })) : [{ type: 'paragraph', text: '' }];
+  const draftKey = 'ssu-story-draft-' + (record?.id || 'new');
   const [form, setForm] = useState(() => ({ ...blankStory(), ...(record || {}), chapter_id: record?.chapter_id || chapters.find(chapter => chapter.is_current)?.id || null, tags: safeArray(record?.tags), blocks: initialBlocks }));
-  const [busyBlock, setBusyBlock] = useState(''); const [saveBusy, setSaveBusy] = useState(false); const [error, setError] = useState(''); const [removedUrls, setRemovedUrls] = useState([]);
-  const updateBlock = (index, change) => setForm(prev => ({ ...prev, blocks: prev.blocks.map((b,i) => i === index ? { ...b, ...change } : b) }));
-  const addBlock = (type) => setForm(prev => ({ ...prev, blocks: [...prev.blocks, type === 'image' ? { type, url: '', caption: '', alt: '' } : { type, text: '' }] }));
-  const removeBlock = (index) => { const block = form.blocks[index]; if (block?.type === 'image' && block.url) setRemovedUrls(prev => [...prev, block.url]); setForm(prev => ({ ...prev, blocks: prev.blocks.filter((_,i) => i !== index) })); };
-  const moveBlock = (i, diff) => setForm(prev => { const n = [...prev.blocks]; const j = i + diff; if (j < 0 || j >= n.length) return prev; [n[i],n[j]] = [n[j],n[i]]; return { ...prev, blocks: n }; });
-  const uploadBlock = async (index, file) => {
-    if (!file) return; setBusyBlock(String(index)); setError('');
-    try { const url = await uploadImage(file, `stories/${form.id || 'new'}`); const old = form.blocks[index]?.url; if (old) setRemovedUrls(prev => [...prev, old]); updateBlock(index, { url, alt: file.name }); notify('Фото добавлено в главу ✨'); }
-    catch (e) { setError(e.message); } finally { setBusyBlock(''); }
+  const [draftReady, setDraftReady] = useState(false); const [draftRecovered, setDraftRecovered] = useState(false);
+  const savedRef = useRef(false);
+  const [saveBusy, setSaveBusy] = useState(false); const [busyImage, setBusyImage] = useState(false); const [error, setError] = useState(''); const [removedUrls, setRemovedUrls] = useState([]);
+  const editorRef = useRef(null); const imageInputRef = useRef(null); const savedRangeRef = useRef(null); const editorInitializedRef = useRef(false);
+  const escapeHtml = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const blocksToHtml = blocks => blocks.map(b => {
+    if (b.type === 'image' && b.url) return '<figure class="inline-story-image" data-url="' + escapeHtml(b.url) + '"><img src="' + escapeHtml(b.url) + '" alt="' + escapeHtml(b.alt || '') + '"><figcaption contenteditable="true" data-placeholder="Подпись к фотографии…">' + escapeHtml(b.caption || '') + '</figcaption><button type="button" class="inline-image-remove" contenteditable="false" data-remove-image="true" aria-label="Удалить фото">×</button></figure>';
+    if (b.type === 'heading') return '<h3>' + escapeHtml(b.text) + '</h3>';
+    if (b.type === 'quote') return '<blockquote>' + escapeHtml(b.text) + '</blockquote>';
+    return '<p>' + (escapeHtml(b.text).replace(/\n/g, '<br>') || '<br>') + '</p>';
+  }).join('') || '<p><br></p>';
+  useEffect(() => {
+    let cancelled = false;
+    const restoreDraft = async () => {
+      const draft = await readStoryDraft(draftKey);
+      if (cancelled) return;
+      if (draft && draft.form && Array.isArray(draft.blocks) && (draft.form.id || !record)) {
+        const restored = { ...blankStory(), ...(record || {}), ...draft.form, tags: safeArray(draft.form.tags), blocks: draft.blocks };
+        setForm(restored);
+        if (editorRef.current) editorRef.current.innerHTML = blocksToHtml(draft.blocks);
+        setDraftRecovered(true);
+      } else if (editorRef.current) {
+        editorRef.current.innerHTML = blocksToHtml(initialBlocks);
+      }
+      editorInitializedRef.current = true;
+      setDraftReady(true);
+    };
+    restoreDraft();
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => {
+    if (!draftReady || savedRef.current) return;
+    const blocks = safeArray(form.blocks);
+    const hasContent = Boolean(form.title || form.subtitle || form.quote || form.tags?.length || blocks.some(b => b.type === 'image' ? Boolean(b.url) : Boolean(b.text?.trim())));
+    if (!hasContent) return;
+    writeStoryDraft(draftKey, { form, blocks, savedAt: Date.now() });
+  }, [form, draftReady]);
+  const saveSelection = () => {
+    const selection = window.getSelection();
+    if (selection?.rangeCount && editorRef.current?.contains(selection.anchorNode)) savedRangeRef.current = selection.getRangeAt(0).cloneRange();
   };
-  const submit = async (e) => {
+  const restoreSelection = () => {
+    const selection = window.getSelection();
+    if (!selection || !editorRef.current) return;
+    editorRef.current.focus();
+    if (savedRangeRef.current) {
+      selection.removeAllRanges();
+      selection.addRange(savedRangeRef.current);
+    } else {
+      const range = document.createRange();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
+  const formatText = (command, value) => {
+    restoreSelection();
+    document.execCommand(command, false, value);
+    saveSelection();
+    editorRef.current?.focus();
+  };
+  const addImageAtCursor = async file => {
+    if (!file) return;
+    if (!file.type?.startsWith('image/')) { setError('Выбери файл изображения.'); return; }
+    if (file.size > 15 * 1024 * 1024) { setError('Фото должно быть не больше 15 МБ.'); return; }
+    saveSelection(); setBusyImage(true); setError('');
+    let previewUrl = '';
+    let figure = null;
+    try {
+      previewUrl = URL.createObjectURL(file);
+      restoreSelection();
+      const selection = window.getSelection();
+      const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+      figure = document.createElement('figure');
+      figure.className = 'inline-story-image is-uploading';
+      const img = document.createElement('img'); img.src = previewUrl; img.alt = file.name || 'Фотография';
+      const caption = document.createElement('figcaption'); caption.contentEditable = 'true'; caption.dataset.placeholder = 'Подпись к фотографии…';
+      const status = document.createElement('span'); status.className = 'inline-image-status'; status.textContent = 'Загружаю фото…';
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'inline-image-remove'; remove.contentEditable = 'false'; remove.dataset.removeImage = 'true'; remove.setAttribute('aria-label','Удалить фото'); remove.textContent = '×';
+      figure.append(img, caption, status, remove);
+      if (range && editorRef.current?.contains(range.commonAncestorContainer)) {
+        range.deleteContents(); range.insertNode(figure);
+        const spacer = document.createElement('p'); spacer.innerHTML = '<br>'; figure.after(spacer);
+        const nextRange = document.createRange(); nextRange.selectNodeContents(spacer); nextRange.collapse(true);
+        selection.removeAllRanges(); selection.addRange(nextRange); savedRangeRef.current = nextRange.cloneRange();
+      } else {
+        editorRef.current?.append(figure);
+        const spacer = document.createElement('p'); spacer.innerHTML = '<br>'; editorRef.current?.append(spacer);
+        const nextRange = document.createRange(); nextRange.selectNodeContents(spacer); nextRange.collapse(true);
+        selection?.removeAllRanges(); selection?.addRange(nextRange); savedRangeRef.current = nextRange.cloneRange();
+      }
+      editorRef.current?.focus();
+      const url = await uploadImage(file, 'stories/' + (form.id || 'new'));
+      figure.dataset.url = url; img.src = url; figure.classList.remove('is-uploading'); status.remove();
+      URL.revokeObjectURL(previewUrl);
+      setForm(prev => ({ ...prev, blocks: readEditorBlocks() }));
+      notify('Фото добавлено в текст ✨');
+    } catch (e) {
+      if (figure?.isConnected) figure.remove();
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setError(e.message || 'Не удалось загрузить фото. Проверь вход в аккаунт и доступ к хранилищу.');
+    } finally {
+      setBusyImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+  const placeCaretAtPoint = e => {
+    const doc = editorRef.current?.ownerDocument;
+    let range = doc?.caretRangeFromPoint?.(e.clientX, e.clientY) || null;
+    if (!range && doc?.caretPositionFromPoint) {
+      const p = doc.caretPositionFromPoint(e.clientX, e.clientY);
+      if (p) { range = doc.createRange(); range.setStart(p.offsetNode, p.offset); range.collapse(true); }
+    }
+    if (range && editorRef.current?.contains(range.commonAncestorContainer)) {
+      const selection = window.getSelection(); selection?.removeAllRanges(); selection?.addRange(range); saveSelection();
+    }
+  };
+  const handleEditorDrop = e => {
+    const file = Array.from(e.dataTransfer?.files || []).find(f => f.type?.startsWith('image/'));
+    if (!file) return;
+    e.preventDefault(); placeCaretAtPoint(e); addImageAtCursor(file);
+  };
+  const handleEditorPaste = e => {
+    const item = Array.from(e.clipboardData?.items || []).find(i => i.type?.startsWith('image/'));
+    const file = item?.getAsFile();
+    if (!file) return;
+    e.preventDefault(); saveSelection(); addImageAtCursor(file);
+  };
+  const handleEditorClick = e => {
+    const button = e.target.closest('[data-remove-image="true"]');
+    if (!button || !editorRef.current?.contains(button)) return;
+    const figure = button.closest('figure');
+    const url = figure?.dataset.url || figure?.querySelector('img')?.src;
+    if (url) setRemovedUrls(prev => [...prev, url]);
+    figure?.remove(); saveSelection();
+  };
+  const readEditorBlocks = () => {
+    const root = editorRef.current;
+    if (!root) return form.blocks;
+    const output = [];
+    const readNode = node => {
+      if (node.nodeType !== Node.ELEMENT_NODE) return;
+      const el = node;
+      if (el.matches('figure.inline-story-image')) {
+        const img = el.querySelector('img'); const url = el.dataset.url || img?.getAttribute('src') || '';
+        if (url) output.push({ type: 'image', url, alt: img?.getAttribute('alt') || '', caption: el.querySelector('figcaption')?.innerText?.trim() || '' });
+        return;
+      }
+      if (el.matches('h1,h2,h3,h4')) { output.push({ type: 'heading', text: el.innerText.trim() }); return; }
+      if (el.matches('blockquote')) { output.push({ type: 'quote', text: el.innerText.trim() }); return; }
+      if (el.matches('p,div')) {
+        const text = el.innerText.replace(/\u00a0/g, ' ').trim();
+        if (text || output.length === 0) output.push({ type: 'paragraph', text });
+        return;
+      }
+      Array.from(el.childNodes).forEach(readNode);
+    };
+    Array.from(root.childNodes).forEach(readNode);
+    return output.length ? output : [{ type: 'paragraph', text: '' }];
+  };
+  const submit = async e => {
     e.preventDefault(); setSaveBusy(true); setError('');
     try {
-      const blocks = form.blocks.map(b => ({ ...b }));
+      const blocks = readEditorBlocks();
       const content = blocks.filter(b => ['paragraph','heading','quote'].includes(b.type)).map(b => b.text || '').join('\n\n');
       await onSave({ ...form, title: form.title.trim(), content, blocks });
+      savedRef.current = true;
+      await deleteStoryDraft(draftKey);
       for (const url of removedUrls) if (!blocks.some(b => b.url === url)) { try { await deleteStoredImage(url); } catch {} }
     } catch (e2) { setError(e2.message || 'Не удалось сохранить главу.'); }
     finally { setSaveBusy(false); }
   };
-  const BLOCK_LABELS = { paragraph: 'Абзац', heading: 'Подзаголовок', quote: 'Цитата', image: 'Фотография' };
-  return <Modal title={record ? 'Редактировать главу' : 'Новая глава'} subtitle="Собери историю из текста, фотографий и маленьких деталей." onClose={onClose} wide>
-    <form className="editor-form story-editor-form" onSubmit={submit}><div className="form-grid-two"><FormField label="Название главы" value={form.title} onChange={v => setForm(p => ({...p,title:v}))} placeholder="Например, Дом, в котором горит свет" required/><FormField label="Подзаголовок" value={form.subtitle} onChange={v => setForm(p => ({...p,subtitle:v}))} placeholder="Глава 01 · Начало чего-то нового"/></div><label className="form-field"><span>Глава династии / поколение</span><select value={form.chapter_id || ''} onChange={e => setForm(p => ({...p, chapter_id: e.target.value || null}))}><option value="">Без главы — общий архив</option>{chapters.slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0)).map(chapter => <option key={chapter.id} value={chapter.id}>Поколение {chapter.generation || 1} · {chapter.title}</option>)}</select><small>История появится внутри выбранной главы.</small></label><div className="form-grid-two"><SelectField label="Настроение главы" value={form.mood} onChange={v => setForm(p => ({...p,mood:v}))} options={['Нежность','Ностальгия','Тайна','Драма','Романтика','Радость','Грусть','Надежда','Хаос','Напряжение']}/><FormField label="Цитата главы" value={form.quote} onChange={v => setForm(p => ({...p,quote:v}))} placeholder="Одна фраза, которую хочется запомнить…"/></div>
-      <div className="form-section-heading"><span>✧</span><div><b>Конструктор главы</b><small>Добавляй блоки и меняй их порядок — как в журнальной статье.</small></div></div>
-      <div className="story-block-list">{form.blocks.map((block,index) => <div className={`story-block-editor block-${block.type}`} key={`${index}-${block.type}`}><div className="story-block-editor-head"><div className="block-grip"><Grip size={15}/><span>{String(index+1).padStart(2,'0')}</span></div><span className="block-type-label">{block.type === 'heading' ? <><span>H</span> Подзаголовок</> : block.type === 'paragraph' ? <><Feather size={13}/> Абзац</> : block.type === 'quote' ? <><Quote size={13}/> Цитата</> : <><ImagePlus size={13}/> Фотография</>}</span><div className="block-move-actions"><IconButton title="Выше" disabled={index===0} onClick={() => moveBlock(index,-1)}><ChevronLeft className="rotate-minus" size={14}/></IconButton><IconButton title="Ниже" disabled={index===form.blocks.length-1} onClick={() => moveBlock(index,1)}><ChevronRight className="rotate-plus" size={14}/></IconButton><IconButton title="Удалить блок" onClick={() => removeBlock(index)}><Trash2 size={14}/></IconButton></div></div>
-        {block.type === 'image' ? <div className="image-block-editor">{block.url ? <div className="image-block-preview"><img src={block.url} alt={block.alt || ''}/><button type="button" onClick={() => { setRemovedUrls(prev => [...prev, block.url]); updateBlock(index,{url:''}); }}><Trash2 size={13}/> Убрать фото</button></div> : <label className="image-dropzone"><ImagePlus size={23}/><b>{busyBlock === String(index) ? 'Загружаем фото…' : 'Добавить фотографию'}</b><span>Нажми, чтобы выбрать файл с устройства · до 15 МБ</span><input type="file" accept="image/*" disabled={Boolean(busyBlock)} onChange={e => { uploadBlock(index,e.target.files?.[0]); e.target.value=''; }}/></label>}<FormField label="Подпись к фотографии" value={block.caption || ''} onChange={v => updateBlock(index,{caption:v})} placeholder="Где, когда и почему этот кадр важен?"/></div> : <FormField label={block.type === 'heading' ? 'Заголовок раздела' : block.type === 'quote' ? 'Текст цитаты' : 'Текст абзаца'} value={block.text || ''} onChange={v => updateBlock(index,{text:v})} placeholder={block.type === 'heading' ? 'Новая сцена…' : block.type === 'quote' ? 'Слова, которые останутся с читателем…' : 'Пиши свободно. Абзац может быть длинным…'} multiline rows={block.type === 'paragraph' ? 5 : 2}/>}</div>)}</div>
-      <div className="add-block-row"><span>Добавить блок:</span><button type="button" onClick={() => addBlock('paragraph')}><Plus size={14}/> Абзац</button><button type="button" onClick={() => addBlock('heading')}><Plus size={14}/> Заголовок</button><button type="button" onClick={() => addBlock('quote')}><Plus size={14}/> Цитата</button><button type="button" onClick={() => addBlock('image')}><ImagePlus size={14}/> Фото</button></div>
-      <TagsField value={form.tags} onChange={v => setForm(p => ({...p,tags:v}))} label="Теги главы"/><label className="favorite-toggle"><input type="checkbox" checked={Boolean(form.published)} onChange={e => setForm(p => ({...p,published:e.target.checked}))}/><span className="fake-check"><Eye size={14}/></span><span><b>Показывать в публичном архиве</b><small>Если снять галочку, глава не будет выводиться гостям после подключения правил публикации.</small></span></label>
-      {error && <div className="form-error"><CircleHelp size={15}/>{error}</div>}<div className="modal-actions form-actions"><span className="form-actions-spacer"/><Button variant="soft" onClick={onClose}>Отмена</Button><Button type="submit" icon={Save} disabled={saveBusy || Boolean(busyBlock)}>{saveBusy ? 'Сохраняю…' : 'Сохранить главу'}</Button></div>
+  return <Modal title={record ? 'Редактировать главу' : 'Новая глава'} subtitle="Пиши историю как в Notion: текст и фотографии в одном общем поле." onClose={onClose} wide>
+    <form className="editor-form story-editor-form" onSubmit={submit}>
+      <div className="form-grid-two"><FormField label="Название главы" value={form.title} onChange={v => setForm(p => ({...p,title:v}))} placeholder="Например, Дом, в котором горит свет" required/><FormField label="Подзаголовок" value={form.subtitle} onChange={v => setForm(p => ({...p,subtitle:v}))} placeholder="Глава 01 · Начало чего-то нового"/></div>
+      <label className="form-field"><span>Глава династии / поколение</span><select value={form.chapter_id || ''} onChange={e => setForm(p => ({...p, chapter_id: e.target.value || null}))}><option value="">Без главы — общий архив</option>{chapters.slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0)).map(chapter => <option key={chapter.id} value={chapter.id}>Поколение {chapter.generation || 1} · {chapter.title}</option>)}</select><small>История появится внутри выбранной главы.</small></label>
+      <div className="form-grid-two"><SelectField label="Настроение главы" value={form.mood} onChange={v => setForm(p => ({...p,mood:v}))} options={['Нежность','Ностальгия','Тайна','Драма','Романтика','Радость','Грусть','Надежда','Хаос','Напряжение']}/><FormField label="Цитата главы" value={form.quote} onChange={v => setForm(p => ({...p,quote:v}))} placeholder="Одна фраза, которую хочется запомнить…"/></div>
+      <div className="form-section-heading"><span>✧</span><div><b>Текст истории</b><small>Пиши подряд, нажимай Enter для нового абзаца, вставляй фото в любое место. Черновик сохраняется автоматически на этом устройстве.</small></div></div>
+      {draftRecovered && <div className="form-note">✦ Я восстановила несохранённый черновик этой истории. После успешного сохранения он будет очищен.</div>}
+      <div className="inline-story-toolbar" onMouseDown={saveSelection}>
+        <button type="button" onClick={() => formatText('formatBlock','<p>')}><Feather size={14}/> Текст</button>
+        <button type="button" onClick={() => formatText('formatBlock','<h3>')}>H₃ Заголовок</button>
+        <button type="button" onClick={() => formatText('formatBlock','<blockquote>')}><Quote size={14}/> Цитата</button>
+        <button type="button" disabled={busyImage} onClick={() => { saveSelection(); imageInputRef.current?.click(); }}><ImagePlus size={14}/>{busyImage ? 'Загружаем…' : 'Вставить фото'}</button>
+        <input ref={imageInputRef} className="inline-image-input" type="file" accept="image/*" onChange={e => addImageAtCursor(e.target.files?.[0])}/>
+      </div>
+      <div ref={editorRef} className="inline-story-editor" contentEditable suppressContentEditableWarning role="textbox" aria-label="Текст истории" aria-multiline="true" onInput={() => { saveSelection(); setForm(prev => ({ ...prev, blocks: readEditorBlocks() })); }} onKeyUp={saveSelection} onMouseUp={saveSelection} onClick={handleEditorClick} onDragOver={e => { if (Array.from(e.dataTransfer?.types || []).includes('Files')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } }} onDrop={handleEditorDrop} onPaste={handleEditorPaste} data-placeholder="Пиши здесь. Перетащи фото из папки прямо в текст или скопируй фото и вставь Ctrl/Cmd+V. Можно также нажать «Вставить фото»."/>
+      <TagsField value={form.tags} onChange={v => setForm(p => ({...p,tags:v}))} label="Теги главы"/>
+      <label className="favorite-toggle"><input type="checkbox" checked={Boolean(form.published)} onChange={e => setForm(p => ({...p,published:e.target.checked}))}/><span className="fake-check"><Eye size={14}/></span><span><b>Показывать в публичном архиве</b><small>Если снять галочку, глава не будет выводиться гостям после подключения правил публикации.</small></span></label>
+      {error && <div className="form-error"><CircleHelp size={15}/>{error}</div>}
+      <div className="modal-actions form-actions"><span className="form-actions-spacer"/><Button variant="soft" onClick={onClose}>Отмена</Button><Button type="submit" icon={Save} disabled={saveBusy || busyImage}>{saveBusy ? 'Сохраняю…' : 'Сохранить главу'}</Button></div>
     </form>
   </Modal>;
 }
-
 function IdeaModal({ record, onClose, onSave }) {
   const [form, setForm] = useState({ ...blankIdea(), ...(record || {}), tags: safeArray(record?.tags) }); const [error, setError] = useState(''); const [saving, setSaving] = useState(false);
   const set = (k,v) => setForm(p => ({ ...p, [k]: v }));
