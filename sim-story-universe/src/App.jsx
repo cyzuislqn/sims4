@@ -1169,8 +1169,36 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
       if (el.matches('h1,h2,h3,h4')) { output.push({ type: 'heading', text: el.innerText.trim() }); return; }
       if (el.matches('blockquote')) { output.push({ type: 'quote', text: el.innerText.trim() }); return; }
       if (el.matches('p,div')) {
-        const text = el.innerText.replace(/\u00a0/g, ' ').trim();
-        if (text || output.length === 0) output.push({ type: 'paragraph', text });
+        // A dropped image can be nested inside the paragraph where the cursor was.
+        // Walk the children in order so that the image is not lost when blocks are saved.
+        let text = '';
+        const flushText = () => {
+          const value = text.replace(/\u00a0/g, ' ').trim();
+          if (value) output.push({ type: 'paragraph', text: value });
+          text = '';
+        };
+        const readInline = child => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            text += child.textContent || '';
+            return;
+          }
+          if (child.nodeType !== Node.ELEMENT_NODE) return;
+          if (child.matches('figure.inline-story-image')) {
+            flushText();
+            const img = child.querySelector('img');
+            const url = child.dataset.url || img?.getAttribute('src') || '';
+            if (url) output.push({ type: 'image', url, alt: img?.getAttribute('alt') || '', caption: child.querySelector('figcaption')?.innerText?.trim() || '' });
+            return;
+          }
+          if (child.matches('br')) {
+            text += '\n';
+            return;
+          }
+          Array.from(child.childNodes).forEach(readInline);
+        };
+        Array.from(el.childNodes).forEach(readInline);
+        flushText();
+        if (output.length === 0) output.push({ type: 'paragraph', text: '' });
         return;
       }
       Array.from(el.childNodes).forEach(readNode);
