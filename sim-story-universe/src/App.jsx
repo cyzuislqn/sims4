@@ -50,7 +50,7 @@ const relationLabelForCharacter = (relationship, characterId, characters = []) =
   const type = relationship.type || 'родственник';
   const fromCharacter = characters.find(c => c.id === relationship.from_character);
   const likelyFemale = (character) => {
-    const name = String(character?.name || '').trim().split(/\\s+/)[0].toLocaleLowerCase('ru-RU');
+    const name = String(character?.name || '').trim().split(/\s+/)[0].toLocaleLowerCase('ru-RU');
     return /[ая]$/.test(name) || /кира|мира|алина|анна|стейси|майя|дафна|лилия|лили$/i.test(name);
   };
   if (type === 'мама' || type === 'папа') {
