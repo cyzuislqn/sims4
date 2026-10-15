@@ -345,24 +345,57 @@ setData(prev => ({
 
   const uploadImage = useCallback(async (file, folder = 'images') => {
     if (!file) return '';
-    if (!file.type.startsWith('image/')) throw new Error('Можно загружать только изображения.');
+    if (!file.type?.startsWith('image/')) throw new Error('Можно загружать только изображения.');
     if (file.size > 15 * 1024 * 1024) throw new Error('Файл больше 15 МБ. Выбери изображение поменьше.');
+
+    // Fallback: if Supabase Storage is blocked by browser/network CORS, embed a
+    // compressed image in the story block so the user's writing is not lost.
+    const toEmbeddedImage = async () => {
+      const source = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error('Не удалось прочитать изображение.'));
+        reader.readAsDataURL(file);
+      });
+      try {
+        const image = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('Не удалось подготовить изображение.'));
+          img.src = source;
+        });
+        const maxSide = 1800;
+        const ratio = Math.min(1, maxSide / Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round((image.naturalWidth || image.width) * ratio));
+        canvas.height = Math.max(1, Math.round((image.naturalHeight || image.height) * ratio));
+        canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.82);
+        return compressed.length < source.length ? compressed : source;
+      } catch {
+        return source;
+      }
+    };
+
     if (supabase) {
       if (!user) throw new Error('Для загрузки фото войди в свой аккаунт.');
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-90) || 'photo.jpg';
       const path = `${folder}/${uid()}-${safeName}`;
-      const { error } = await supabase.storage.from('photos').upload(path, file, { upsert: false, contentType: file.type, cacheControl: '3600' });
-      if (error) throw error;
-      const { data: publicData } = supabase.storage.from('photos').getPublicUrl(path);
-      return publicData.publicUrl;
+      try {
+        const { error } = await supabase.storage.from('photos').upload(path, file, { upsert: false, contentType: file.type, cacheControl: '3600' });
+        if (error) throw error;
+        const { data: publicData } = supabase.storage.from('photos').getPublicUrl(path);
+        return publicData.publicUrl;
+      } catch (error) {
+        const message = String(error?.message || error || '');
+        const isNetworkOrCors = error instanceof TypeError || /fetch|network|cors|failed to fetch|load failed/i.test(message);
+        if (!isNetworkOrCors) throw error;
+        notify('Хранилище фото сейчас недоступно из-за сетевой ошибки. Фото будет сохранено прямо в истории.', 'error');
+        return await toEmbeddedImage();
+      }
     }
-    return await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(new Error('Не удалось прочитать изображение.'));
-      reader.readAsDataURL(file);
-    });
-  }, [user]);
+    return await toEmbeddedImage();
+  }, [user, notify]);
 
   const deleteStoredImage = useCallback(async (url) => {
     if (!url) return;
