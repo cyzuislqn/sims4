@@ -22,6 +22,8 @@ create table if not exists public.characters (
   is_favorite boolean not null default false,
   generation integer not null default 1,
   character_type text not null default 'Побочный персонаж',
+  is_alive boolean not null default true,
+  cause_of_death text default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -48,16 +50,28 @@ create table if not exists public.relationships (
   description text default '',
   tags text[] not null default '{}',
   status text default 'Активна',
+  trust integer not null default 50 check (trust between 0 and 100),
+  fear integer not null default 0 check (fear between 0 and 100),
+  love integer not null default 0 check (love between 0 and 100),
+  jealousy integer not null default 0 check (jealousy between 0 and 100),
+  resentment integer not null default 0 check (resentment between 0 and 100),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint relationships_different_characters check (from_character is null or to_character is null or from_character <> to_character)
 );
 
 alter table public.relationships add column if not exists tags text[] not null default '{}';
+alter table public.relationships add column if not exists trust integer not null default 50 check (trust between 0 and 100);
+alter table public.relationships add column if not exists fear integer not null default 0 check (fear between 0 and 100);
+alter table public.relationships add column if not exists love integer not null default 0 check (love between 0 and 100);
+alter table public.relationships add column if not exists jealousy integer not null default 0 check (jealousy between 0 and 100);
+alter table public.relationships add column if not exists resentment integer not null default 0 check (resentment between 0 and 100);
 
 -- Character archive: generation number and main/side role.
 alter table public.characters add column if not exists generation integer not null default 1;
 alter table public.characters add column if not exists character_type text not null default 'Побочный персонаж';
+alter table public.characters add column if not exists is_alive boolean not null default true;
+alter table public.characters add column if not exists cause_of_death text default '';
 update public.characters set generation = greatest(1, generation) where generation is null or generation < 1;
 update public.characters
 set generation = case
