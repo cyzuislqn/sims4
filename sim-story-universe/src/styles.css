@@ -1136,3 +1136,9 @@ button:disabled { opacity: .48; cursor: not-allowed; }
 .tree-node-secondary .tree-node-bottom { padding-top: 5px; margin-top: 6px; font-size: 7px; }
 .tree-node-secondary .tree-node-main > svg { width: 12px; }
 .tree-node-secondary:hover, .tree-node-secondary.dragging { border-color: #d8b8c5; box-shadow: 0 8px 18px rgba(121,72,95,.12); }
+
+
+.tree-node-top-actions { display: inline-flex; align-items: center; gap: 5px; }
+.tree-focus-button { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 1px solid #efdee5; border-radius: 6px; background: #fff9fb; color: #b38b9e; cursor: pointer; opacity: .78; }
+.tree-focus-button:hover { opacity: 1; background: #f7e8ee; color: #865d73; }
+.tree-node-secondary .tree-focus-button { width: 17px; height: 17px; }
