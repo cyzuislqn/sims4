@@ -715,15 +715,7 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
     return positions[id] ? { x: positions[id].x + (compact ? 55 : 116), y: positions[id].y + (compact ? 22 : 71) } : null;
   };
   const relsToDraw = relationships.filter(r => positions[r.from_character] && positions[r.to_character]);
-  const focusedCharacterIds = useMemo(() => {
-    if (!previewFocusId) return new Set();
-    const ids = new Set([previewFocusId]);
-    relationships.forEach(r => {
-      if (r.from_character === previewFocusId) ids.add(r.to_character);
-      if (r.to_character === previewFocusId) ids.add(r.from_character);
-    });
-    return ids;
-  }, [previewFocusId, relationships]);
+  const focusedCharacterIds = useMemo(() => new Set(previewFocusId ? [previewFocusId] : []), [previewFocusId]);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -790,7 +782,7 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
           const path = `M ${actualA.x} ${actualA.y} C ${actualA.x + dx*0.36} ${actualA.y + dy*0.08}, ${actualB.x - dx*0.36} ${actualB.y - dy*0.08}, ${actualB.x} ${actualB.y}`;
           const labelX = (actualA.x + actualB.x)/2; const labelY = (actualA.y + actualB.y)/2 - 8;
           const isFocusEdge = !previewFocusId || (r.from_character === previewFocusId || r.to_character === previewFocusId);
-          return <g key={r.id} className={`tree-edge ${previewFocusId ? (isFocusEdge ? 'tree-edge-focus' : 'tree-edge-dimmed') : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
+          return <g key={r.id} className={`tree-edge ${previewFocusId ? (isFocusEdge ? 'tree-edge-related' : 'tree-edge-dimmed') : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
         })}</svg>
         {characters.map((c, i) => {
           const p = positionFor(c.id) || { x: 80 + (i%3)*340, y: 90 + Math.floor(i/3)*220 };
