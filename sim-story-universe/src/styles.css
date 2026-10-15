@@ -1246,3 +1246,8 @@ button:disabled { opacity: .48; cursor: not-allowed; }
 .tree-lines {
   overflow: visible;
 }
+
+.tree-world-preview-focus .tree-edge-related {
+  opacity: .24;
+  filter: blur(1.2px);
+}
