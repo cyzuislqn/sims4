@@ -703,6 +703,7 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
   const [pan, setPan] = useState({ x: 48, y: 20 });
   const [drag, setDrag] = useState(null);
   const [selectedRel, setSelectedRel] = useState(null);
+  const [previewFocusId, setPreviewFocusId] = useState(null);
   const fallbackPositions = useMemo(() => Object.fromEntries(characters.map((c, i) => [c.id, { x: 100 + (i % 3) * 330, y: 130 + Math.floor(i / 3) * 220 }])), [characters]);
   const positions = useMemo(() => Object.fromEntries(characters.map(c => {
     const saved = treeRows.find(r => r.character_id === c.id);
@@ -711,9 +712,18 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
   const center = (id) => {
     const character = characters.find(c => c.id === id);
     const compact = isSecondaryCharacter(character);
-    return positions[id] ? { x: positions[id].x + (compact ? 88 : 116), y: positions[id].y + (compact ? 53 : 71) } : null;
+    return positions[id] ? { x: positions[id].x + (compact ? 55 : 116), y: positions[id].y + (compact ? 22 : 71) } : null;
   };
   const relsToDraw = relationships.filter(r => positions[r.from_character] && positions[r.to_character]);
+  const focusedCharacterIds = useMemo(() => {
+    if (!previewFocusId) return new Set();
+    const ids = new Set([previewFocusId]);
+    relationships.forEach(r => {
+      if (r.from_character === previewFocusId) ids.add(r.to_character);
+      if (r.to_character === previewFocusId) ids.add(r.from_character);
+    });
+    return ids;
+  }, [previewFocusId, relationships]);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -736,8 +746,9 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
     if (!drag) return;
     if (drag.kind === 'pan') setPan({ x: drag.originX + e.clientX - drag.startX, y: drag.originY + e.clientY - drag.startY });
     else if (drag.kind === 'node') {
-      const x = Math.max(0, Math.min(2100, drag.originNodeX + (e.clientX - drag.startX) / zoom));
-      const y = Math.max(0, Math.min(1250, drag.originNodeY + (e.clientY - drag.startY) / zoom));
+      // Keep the canvas effectively open-ended in every direction; the world is much larger than the visible viewport.
+      const x = Math.max(-4000, Math.min(10000, drag.originNodeX + (e.clientX - drag.startX) / zoom));
+      const y = Math.max(-3000, Math.min(7000, drag.originNodeY + (e.clientY - drag.startY) / zoom));
       setDrag(prev => ({ ...prev, currentX: x, currentY: y }));
     }
   };
@@ -760,16 +771,16 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
     const viewport = viewportRef.current;
     if (!p || !viewport) return;
     const compact = isSecondaryCharacter(character);
-    const cx = p.x + (compact ? 88 : 116);
-    const cy = p.y + (compact ? 53 : 71);
+    const cx = p.x + (compact ? 55 : 116);
+    const cy = p.y + (compact ? 22 : 71);
     setPan({ x: viewport.clientWidth / 2 - cx * zoom, y: viewport.clientHeight / 2 - cy * zoom });
   };
 
   return <div className="page-content tree-page"><PageHeader kicker="ROOTS, BRANCHES & CONNECTIONS" title="Древо семьи" description="Перемещай карточки, исследуй связи и смотри, как разрастается твоя вселенная." icon={Network} action={canEdit ? onCreateRelation : null} actionLabel="Добавить связь" actionIcon={Link2} />
     <div className="tree-toolbar"><div className="tree-legend"><span><i style={{ background: REL_COLORS['мама'] }}/> семья</span><span><i style={{ background: REL_COLORS['партнёр'] }} /> партнёры</span><span><i className="legend-dashed" style={{ borderColor: REL_COLORS['тайная связь'] }} /> тайная связь</span><span><i style={{ background: REL_COLORS['друг'] }} /> дружба</span></div><div className="tree-tools"><span className="zoom-level">{Math.round(zoom * 100)}%</span><IconButton title="Уменьшить" onClick={() => zoomBy(-0.1)}><ZoomOut size={17}/></IconButton><IconButton title="Увеличить" onClick={() => zoomBy(0.1)}><ZoomIn size={17}/></IconButton><IconButton title="Сбросить масштаб и позицию" onClick={() => { setZoom(0.8); setPan({ x: 48, y: 20 }); }}><RefreshCw size={16}/></IconButton></div></div>
     <div className="tree-board-frame"><div className="tree-board" ref={viewportRef} onPointerDown={onBoardDown} onPointerMove={onBoardMove} onPointerUp={onBoardUp} onPointerCancel={onBoardUp}>
-      <div className="tree-world" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
-        <svg className="tree-lines" width="2300" height="1450" viewBox="0 0 2300 1450" aria-label="Линии семейных связей">{relsToDraw.map(r => {
+      <div className={`tree-world ${previewFocusId ? 'tree-world-preview-focus' : ''}`} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
+        <svg className="tree-lines" width="12000" height="9000" viewBox="-4000 -3000 12000 9000" aria-label="Линии семейных связей">{relsToDraw.map(r => {
           const a = center(r.from_character); const b = center(r.to_character); const color = REL_COLORS[r.type] || '#d19bae';
           const centerOffset = (id) => isSecondaryCharacter(characters.find(c => c.id === id)) ? { x: 88, y: 53 } : { x: 116, y: 71 };
           const offsetA = centerOffset(r.from_character); const offsetB = centerOffset(r.to_character);
@@ -778,14 +789,23 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
           const dx = actualB.x - actualA.x; const dy = actualB.y - actualA.y;
           const path = `M ${actualA.x} ${actualA.y} C ${actualA.x + dx*0.36} ${actualA.y + dy*0.08}, ${actualB.x - dx*0.36} ${actualB.y - dy*0.08}, ${actualB.x} ${actualB.y}`;
           const labelX = (actualA.x + actualB.x)/2; const labelY = (actualA.y + actualB.y)/2 - 8;
-          return <g key={r.id} className="tree-edge" onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
+          const isFocusEdge = !previewFocusId || (r.from_character === previewFocusId || r.to_character === previewFocusId);
+          return <g key={r.id} className={`tree-edge ${previewFocusId ? (isFocusEdge ? 'tree-edge-focus' : 'tree-edge-dimmed') : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
         })}</svg>
         {characters.map((c, i) => {
           const p = positionFor(c.id) || { x: 80 + (i%3)*340, y: 90 + Math.floor(i/3)*220 };
           const connected = relationships.filter(r => r.from_character === c.id || r.to_character === c.id).length;
           const secondary = isSecondaryCharacter(c);
-          return <div key={c.id} className={`tree-node ${secondary ? 'tree-node-secondary' : 'tree-node-primary'} ${drag?.kind === 'node' && drag.characterId === c.id ? 'dragging' : ''}`} style={{ left: `${p.x}px`, top: `${p.y}px` }} onPointerDown={(e) => startNodeDrag(e, c)}>
-            <div className="tree-node-top"><span>{secondary ? '✦ STORY CONNECTION' : '✿ FAMILY ARCHIVE'}</span><span className="tree-node-top-actions">{c.is_favorite && <Star size={12} fill="currentColor"/>}<button type="button" className="tree-focus-button" title={`Сфокусироваться на ${c.name}`} aria-label={`Сфокусироваться на ${c.name}`} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); focusCharacter(c); }}><LocateFixed size={12}/></button></span></div><button className="tree-node-main" onClick={(e) => { if (drag) return; e.stopPropagation(); openCharacter(c); }}><Avatar character={c} size="sm"/><span><strong>{c.name}</strong><small>{secondary ? (c.character_type || 'Второстепенный персонаж') : (c.age || 'Возраст неизвестен')}</small></span><ChevronRight size={15}/></button><div className="tree-node-bottom"><span><Link2 size={12}/>{connected} связи</span>{!secondary && <span>{c.career || 'история продолжается'}</span>}</div><span className="tree-node-handle tl"/><span className="tree-node-handle tr"/><span className="tree-node-handle bl"/><span className="tree-node-handle br"/></div>;
+          const connectedRelationships = relationships.filter(r => r.from_character === c.id || r.to_character === c.id);
+          const relationshipHints = connectedRelationships.map(r => {
+            const otherId = r.from_character === c.id ? r.to_character : r.from_character;
+            const other = characters.find(person => person.id === otherId);
+            const label = r.type === 'жена' || r.type === 'муж' ? 'Супруги' : r.type;
+            return `${label}: ${other?.name || 'персонаж'}`;
+          });
+          const nodeFocused = !previewFocusId || focusedCharacterIds.has(c.id);
+          return <div key={c.id} className={`tree-node ${secondary ? 'tree-node-secondary' : 'tree-node-primary'} ${previewFocusId ? (nodeFocused ? 'tree-node-focus' : 'tree-node-dimmed') : ''} ${drag?.kind === 'node' && drag.characterId === c.id ? 'dragging' : ''}`} style={{ left: `${p.x}px`, top: `${p.y}px` }} onPointerDown={(e) => startNodeDrag(e, c)}>
+            <div className="tree-node-top"><span>{secondary ? '✦ STORY CONNECTION' : '✿ FAMILY ARCHIVE'}</span><span className="tree-node-top-actions">{c.is_favorite && <Star size={12} fill="currentColor"/>}<button type="button" className="tree-focus-button" title={`Сфокусироваться на ${c.name}`} aria-label={`Сфокусироваться на ${c.name}`} onPointerDown={e => e.stopPropagation()} onPointerEnter={() => setPreviewFocusId(c.id)} onPointerLeave={() => setPreviewFocusId(null)} onFocus={() => setPreviewFocusId(c.id)} onBlur={() => setPreviewFocusId(null)} onClick={e => { e.stopPropagation(); focusCharacter(c); }}><LocateFixed size={12}/></button></span></div><button className="tree-node-main" title={secondary ? relationshipHints.join(' · ') : undefined} onClick={(e) => { if (drag) return; e.stopPropagation(); openCharacter(c); }}><Avatar character={c} size="sm"/><span><strong>{c.name}</strong><small>{secondary ? (c.character_type || 'Второстепенный персонаж') : (c.age || 'Возраст неизвестен')}</small></span><ChevronRight size={15}/></button><div className="tree-node-bottom"><span><Link2 size={12}/>{connected} связи</span>{!secondary && <span>{c.career || 'история продолжается'}</span>}</div>{secondary && relationshipHints.length > 0 && <div className="tree-node-relationship-hints">{relationshipHints.join(' · ')}</div>}<span className="tree-node-handle tl"/><span className="tree-node-handle tr"/><span className="tree-node-handle bl"/><span className="tree-node-handle br"/></div>;
         })}
         {!characters.length && <div className="tree-empty"><div>✧</div><h3>Здесь вырастет твоё древо</h3><p>Добавь персонажей, а затем соедини их отношениями.</p></div>}
       </div>
