@@ -534,7 +534,7 @@ setData(prev => ({
         <div className="brand-name">sim story <strong>universe</strong><small>YOUR LEGACY, YOUR MAGIC</small></div>
         <IconButton title="Закрыть меню" className="sidebar-close" onClick={() => setMobileMenu(false)}><X size={18} /></IconButton>
       </div>
-      <div className="sidebar-season"><div className="season-label"><span className="season-dot" /> ТВОЯ ВСЕЛЕННАЯ</div><p>Сезон <b>01</b> · Поколение <b>{String(currentChapter?.generation || 1).padStart(2, '0')}</b></p><div className="season-progress"><span /></div><small>{currentChapter?.title || 'История только начинается'}</small></div>
+      <div className="sidebar-season"><div className="season-label"><span className="season-dot" /> ТВОЯ ВСЕЛЕННАЯ</div><p>Сезон <b>01</b> · Поколение {canEdit && currentChapter ? <input className="season-generation-input" aria-label="Номер поколения" type="number" min="1" defaultValue={currentChapter.generation || 1} key={`${currentChapter.id}-${currentChapter.generation}`} onClick={e => e.stopPropagation()} onBlur={async e => { const generation = Math.max(1, Number(e.target.value) || 1); if (generation !== Number(currentChapter.generation || 1)) { try { await saveRecord('chapters', { ...currentChapter, generation }); } catch (error) { notify(error.message || 'Не удалось сохранить поколение', 'error'); } } }} onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} /> : <b>{String(currentChapter?.generation || 1).padStart(2, '0')}</b>}</p><div className="season-progress"><span /></div>{(() => { const latestPublished = stories.filter(story => story.published).slice().sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))[0]; return latestPublished ? <button className="sidebar-latest-story" onClick={() => setStoryOpen(latestPublished)} title={`Открыть последнюю опубликованную историю: ${latestPublished.title}`}><BookOpen size={13}/><span>Последняя история</span><b>{latestPublished.title}</b><ArrowUpRight size={13}/></button> : <small>{currentChapter?.title || 'История только начинается'}</small>; })()}</div>
       <nav className="main-nav" aria-label="Основная навигация">
         <div className="nav-caption">АРХИВ</div>
         {NAV.map(item => <button key={item.id} className={`nav-item ${activeSection === item.id ? 'active' : ''}`} onClick={() => changeSection(item.id)}><item.icon size={18} strokeWidth={1.8} /><span>{item.label}</span>{item.id === 'characters' && <small>{characters.length || '—'}</small>}</button>)}
@@ -664,7 +664,7 @@ function StoriesPage({ stories, chapters, onCreate, onCreateChapter, onEdit, onO
   const [search, setSearch] = useState(''); const [mood, setMood] = useState('Все настроения');
   const moods = ['Все настроения', ...new Set(stories.map(s => s.mood).filter(Boolean))];
   const needle = search.toLocaleLowerCase('ru');
-  const filtered = stories.filter(s => (mood === 'Все настроения' || s.mood === mood) && [s.title,s.subtitle,s.content,s.quote,...safeArray(s.tags)].join(' ').toLocaleLowerCase('ru').includes(needle)).sort((a,b) => new Date(b.created_at || 0)-new Date(a.created_at || 0));
+  const filtered = stories.filter(s => (mood === 'Все настроения' || s.mood === mood) && [s.title,s.subtitle,s.content,s.quote,...safeArray(s.tags)].join(' ').toLocaleLowerCase('ru').includes(needle)).sort((a,b) => new Date(a.created_at || 0)-new Date(b.created_at || 0));
   const orderedChapters = safeArray(chapters).slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0));
   const unassigned = filtered.filter(story => !story.chapter_id || !orderedChapters.some(chapter => chapter.id === story.chapter_id));
   return <div className="page-content">
@@ -774,7 +774,10 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
       <div className={`tree-world ${previewFocusId ? 'tree-world-preview-focus' : ''}`} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
         <svg className="tree-lines" width="12000" height="9000" viewBox="0 0 12000 9000" aria-label="Линии семейных связей">{relsToDraw.map(r => {
           const a = center(r.from_character); const b = center(r.to_character); const color = REL_COLORS[r.type] || '#d19bae';
-          const centerOffset = (id) => isSecondaryCharacter(characters.find(c => c.id === id)) ? { x: 88, y: 53 } : { x: 116, y: 71 };
+          const secondaryA = isSecondaryCharacter(characters.find(c => c.id === r.from_character));
+          const secondaryB = isSecondaryCharacter(characters.find(c => c.id === r.to_character));
+          const hasSecondaryEndpoint = secondaryA || secondaryB;
+          const centerOffset = (id) => isSecondaryCharacter(characters.find(c => c.id === id)) ? { x: 55, y: 22 } : { x: 116, y: 71 };
           const offsetA = centerOffset(r.from_character); const offsetB = centerOffset(r.to_character);
           const actualA = drag?.kind === 'node' && drag.characterId === r.from_character ? { x: drag.currentX + offsetA.x, y: drag.currentY + offsetA.y } : a;
           const actualB = drag?.kind === 'node' && drag.characterId === r.to_character ? { x: drag.currentX + offsetB.x, y: drag.currentY + offsetB.y } : b;
@@ -782,7 +785,11 @@ function FamilyTreePage({ characters, relationships, treeRows, onCreateRelation,
           const path = `M ${actualA.x} ${actualA.y} C ${actualA.x + dx*0.36} ${actualA.y + dy*0.08}, ${actualB.x - dx*0.36} ${actualB.y - dy*0.08}, ${actualB.x} ${actualB.y}`;
           const labelX = (actualA.x + actualB.x)/2; const labelY = (actualA.y + actualB.y)/2 - 8;
           const isFocusEdge = !previewFocusId || (r.from_character === previewFocusId || r.to_character === previewFocusId);
-          return <g key={r.id} className={`tree-edge ${previewFocusId ? (isFocusEdge ? 'tree-edge-related' : 'tree-edge-dimmed') : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><path d={path} stroke={color} strokeWidth="3" strokeDasharray={REL_DASH[r.type] || ''} fill="none" opacity={selectedRel?.id === r.id ? 1 : .72}/><circle cx={actualA.x} cy={actualA.y} r="4" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="4" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{(r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type}</text></g>;
+          const fromCharacter = characters.find(person => person.id === r.from_character);
+          const toCharacter = characters.find(person => person.id === r.to_character);
+          const lineLabel = (r.type === 'жена' || r.type === 'муж') ? 'Супруги' : r.type;
+          const lineStyle = hasSecondaryEndpoint ? 'secondary' : 'primary';
+          return <g key={r.id} className={`tree-edge tree-edge-${lineStyle} ${previewFocusId ? (isFocusEdge ? 'tree-edge-related' : 'tree-edge-dimmed') : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedRel(r); }}><title>{`${lineLabel}: ${fromCharacter?.name || 'Персонаж'} — ${toCharacter?.name || 'Персонаж'}${r.description ? ` · ${r.description}` : ''}`}</title><path d={path} stroke={hasSecondaryEndpoint ? '#bfaab5' : color} strokeWidth={hasSecondaryEndpoint ? '1.6' : '2.5'} strokeDasharray={hasSecondaryEndpoint ? '4 6' : (REL_DASH[r.type] || '')} fill="none" opacity={selectedRel?.id === r.id ? 1 : (hasSecondaryEndpoint ? .62 : .72)}/>{!hasSecondaryEndpoint && <><circle cx={actualA.x} cy={actualA.y} r="3" fill={color}/><circle cx={actualB.x} cy={actualB.y} r="3" fill={color}/><rect x={labelX - 54} y={labelY - 13} width="108" height="25" rx="12" fill="#fff9fb" stroke={color} strokeWidth="1"/><text x={labelX} y={labelY + 4} textAnchor="middle" fill="#765667" fontSize="11" fontFamily="DM Sans, sans-serif">{lineLabel}</text></>}</g>;
         })}</svg>
         {characters.map((c, i) => {
           const p = positionFor(c.id) || { x: 80 + (i%3)*340, y: 90 + Math.floor(i/3)*220 };
