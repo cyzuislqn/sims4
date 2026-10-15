@@ -1124,3 +1124,15 @@ button:disabled { opacity: .48; cursor: not-allowed; }
 .inline-story-image.is-uploading { opacity: .78; }
 .inline-image-status { display: block; padding: 7px 10px; color: #9a6d81; font-size: 11px; text-align: center; }
 .inline-story-editor[contenteditable="true"]:empty:before { content: attr(data-placeholder); color: #b9a4ae; pointer-events: none; }
+
+
+/* Family tree hierarchy: keep every character visible while reducing visual weight of side characters. */
+.tree-node-primary { width: 232px; }
+.tree-node-secondary { width: 176px; padding: 8px 9px 7px; border-color: #eee2e6; background: rgba(255,253,252,.92); box-shadow: 0 4px 13px rgba(121,72,95,.07); }
+.tree-node-secondary .tree-node-top { margin-bottom: 6px; font-size: 6px; letter-spacing: .75px; }
+.tree-node-secondary .tree-node-main { gap: 6px; }
+.tree-node-secondary .tree-node-main strong { font-size: 12px; }
+.tree-node-secondary .tree-node-main small { font-size: 7px; margin-top: 2px; }
+.tree-node-secondary .tree-node-bottom { padding-top: 5px; margin-top: 6px; font-size: 7px; }
+.tree-node-secondary .tree-node-main > svg { width: 12px; }
+.tree-node-secondary:hover, .tree-node-secondary.dragging { border-color: #d8b8c5; box-shadow: 0 8px 18px rgba(121,72,95,.12); }
