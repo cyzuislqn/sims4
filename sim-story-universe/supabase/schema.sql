@@ -8,6 +8,7 @@ create table if not exists public.characters (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   portrait_url text,
+  age_photos jsonb not null default '[]'::jsonb,
   age text default '',
   appearance text default '',
   personality text default '',
@@ -34,6 +35,7 @@ create table if not exists public.stories (
   subtitle text default '',
   content text default '',
   blocks jsonb not null default '[]'::jsonb,
+  cover_url text default '',
   mood text default 'Нежность',
   quote text default '',
   tags text[] not null default '{}',
@@ -41,6 +43,9 @@ create table if not exists public.stories (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.characters add column if not exists age_photos jsonb not null default '[]'::jsonb;
+alter table public.stories add column if not exists cover_url text default '';
 
 create table if not exists public.relationships (
   id uuid primary key default gen_random_uuid(),
