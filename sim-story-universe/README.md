@@ -30,7 +30,9 @@
 
 1. В панели Supabase открой **SQL Editor → New query**.
 2. Скопируй весь файл `supabase/schema.sql` из этого проекта, вставь и выполни.
-3. SQL создаёт таблицы `characters`, `stories`, `relationships`, `family_tree`, `ideas`, `tags`, политики RLS и публичный Storage bucket `photos`.
+3. SQL создаёт таблицы `characters`, `stories`, `relationships`, `family_tree`, `ideas`, `tags`, политики RLS и публичный Storage bucket `photos`. Также он добавляет `characters.age_photos` и `stories.cover_url` для галереи возрастов и обложек глав.
+
+Если база уже существует, для новых функций достаточно выполнить файл `supabase/migrations/20261016_character_age_photos_and_story_covers.sql` в SQL Editor — он добавляет два поля без удаления старых данных.
 4. Проверь в **Storage** наличие bucket `photos`.
 
 В bucket хранятся публично читаемые изображения. Загружать, обновлять и удалять файлы могут только авторизованные пользователи. Публичная ссылка на фото означает, что посетитель, получивший URL, сможет открыть изображение.
