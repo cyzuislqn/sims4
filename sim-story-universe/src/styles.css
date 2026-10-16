@@ -1483,3 +1483,28 @@ button:disabled { opacity: .48; cursor: not-allowed; }
 .tree-node-secondary .tree-death-stamp { padding: 2px 4px; font-size: 7px; letter-spacing: .04em; }
 .tree-death-ribbon { right: 8px; width: 12px; height: 30px; }
 .tree-node-secondary .tree-death-ribbon { right: 6px; width: 8px; height: 21px; }
+
+/* Chapter image covers */
+.story-thumbnail { min-height: 130px; }
+.story-thumbnail-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.story-thumbnail.has-story-cover:after { background: linear-gradient(0deg,rgba(63,43,57,.22),transparent 55%); left: 0; bottom: 0; width: 100%; height: 100%; border-radius: 0; }
+.story-thumbnail.has-story-cover .thumb-sun, .story-thumbnail.has-story-cover .thumb-hill { display: none; }
+.story-thumbnail.has-story-cover .thumb-flower { color: rgba(255,255,255,.92); text-shadow: 0 1px 5px rgba(0,0,0,.25); }
+.story-thumbnail.has-story-cover .thumb-num { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.35); }
+/* Character age-stage photo archive */
+.age-photo-upload-panel { padding: 15px; border: 1px solid #f0e0e5; border-radius: 14px; background: #fff9f9; margin: 0 0 22px; }
+.age-photo-add { display: inline-flex; width: fit-content; margin: 3px 0 12px; }
+.age-photo-selected-story { display: block; color: #a8788d; margin: -4px 0 12px; }
+.age-photo-editor-grid, .age-photo-gallery { display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr)); gap: 12px; margin-top: 12px; }
+.age-photo-editor-card, .age-photo-card { min-width: 0; overflow: hidden; border: 1px solid #f0e1e6; border-radius: 12px; background: #fffdfc; }
+.age-photo-editor-card img, .age-photo-card img { display: block; width: 100%; height: 155px; object-fit: cover; background: #f7e9ed; }
+.age-photo-editor-meta, .age-photo-card-copy { padding: 10px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.age-photo-editor-meta b { font-size: 11px; color: #775668; }
+.age-photo-editor-meta small, .age-photo-card-copy small { font-size: 9px; line-height: 1.4; color: #a58d98; overflow-wrap: anywhere; }
+.age-photo-editor-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 5px; }
+.age-photo-editor-actions button { border: 1px solid #f0dce4; border-radius: 8px; background: #fff7f8; padding: 6px 8px; color: #99677f; font-size: 9px; }
+.age-photo-editor-actions .remove-photo-link { background: transparent; border: 0; padding-left: 0; }
+.age-photo-card-copy > span { align-self: flex-start; border-radius: 7px; background: #f7e8ed; padding: 4px 7px; color: #986780; font-size: 9px; font-weight: 700; }
+.age-photo-card-copy p { margin: 2px 0; color: #765e6b; font-size: 11px; line-height: 1.5; }
+.age-photo-gallery-section { margin-top: 24px; }
+@media (max-width: 560px) { .age-photo-editor-grid, .age-photo-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); } .age-photo-editor-card img, .age-photo-card img { height: 130px; } }
