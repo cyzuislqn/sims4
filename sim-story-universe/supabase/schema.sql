@@ -115,6 +115,13 @@ create table if not exists public.ideas (
 );
 
 -- One row per tag assignment. entity_type is one of character, story, relationship, idea.
+create table if not exists public.moments (
+  id uuid primary key default gen_random_uuid(), title text not null, description text default '', content text default '', event_date date default current_date, age_stage text not null default 'Любой возраст', character_ids uuid[] not null default '{}', tags text[] not null default '{}', linked_story_id uuid references public.stories(id) on delete set null, cover_url text default '', images jsonb not null default '[]'::jsonb, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create index if not exists moments_event_date_idx on public.moments(event_date desc);
+create index if not exists moments_character_ids_idx on public.moments using gin(character_ids);
+create index if not exists moments_tags_idx on public.moments using gin(tags);
+
 create table if not exists public.tags (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -138,7 +145,7 @@ $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['characters','stories','relationships','family_tree','ideas'] loop
+  foreach t in array array['characters','stories','relationships','family_tree','ideas','moments'] loop
     execute format('drop trigger if exists %I on public.%I', t || '_set_updated_at', t);
     execute format('create trigger %I before update on public.%I for each row execute function public.set_updated_at()', t || '_set_updated_at', t);
   end loop;
@@ -149,6 +156,7 @@ alter table public.stories enable row level security;
 alter table public.relationships enable row level security;
 alter table public.family_tree enable row level security;
 alter table public.ideas enable row level security;
+alter table public.moments enable row level security;
 alter table public.tags enable row level security;
 
 
@@ -162,7 +170,7 @@ declare
 begin
   foreach t in array array[
     'characters', 'stories', 'relationships',
-    'family_tree', 'ideas', 'tags'
+    'family_tree', 'ideas', 'moments', 'tags'
   ] loop
     -- Remove policies from the previous schema version.
     execute format(
@@ -244,19 +252,19 @@ end $$;
 -- Grant only the SQL operations the app needs.
 revoke all on table
   public.characters, public.stories, public.relationships,
-  public.family_tree, public.ideas, public.tags
+  public.family_tree, public.ideas, public.moments, public.tags
 from anon, authenticated;
 
 grant usage on schema public to anon, authenticated;
 
 grant select on
   public.characters, public.stories, public.relationships,
-  public.family_tree, public.ideas, public.tags
+  public.family_tree, public.ideas, public.moments, public.tags
 to anon, authenticated;
 
 grant insert, update, delete on
   public.characters, public.stories, public.relationships,
-  public.family_tree, public.ideas, public.tags
+  public.family_tree, public.ideas, public.moments, public.tags
 to authenticated;
 
 -- Public images: anyone with an image URL can view it.
