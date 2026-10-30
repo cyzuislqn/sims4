@@ -1574,3 +1574,30 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   .story-editor-form .inline-story-toolbar button { padding: 7px 8px; }
   .story-reader-cover { min-height: 220px; padding: 20px 15px; }
 }
+
+
+/* Story typography and image sizing */
+.story-reader-modal,
+.story-reader-modal *,
+.story-editor-modal,
+.story-editor-modal * {
+  font-family: 'Montserrat', sans-serif !important;
+}
+.story-reader-body .reader-figure img {
+  width: 100%;
+  max-width: 100%;
+  max-height: min(82vh, 1000px);
+  height: auto;
+  object-fit: contain;
+}
+.story-reader-body .reader-figure {
+  width: 100%;
+  margin: 30px 0;
+}
+.story-reader-body .reader-figure figcaption {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+}
+.story-editor-form .inline-story-editor {
+  font-family: 'Montserrat', sans-serif;
+}
