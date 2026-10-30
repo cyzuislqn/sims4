@@ -1306,15 +1306,7 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
           <button type="button" title="Заголовок" onClick={() => formatText('formatBlock','<h3>')}>H₃ Заголовок</button>
           <button type="button" title="Цитата" onClick={() => formatText('formatBlock','<blockquote>')}><Quote size={14}/> Цитата</button>
         </div>
-        <div className="story-toolbar-group story-toolbar-marks">
-          <button type="button" title="Жирный" aria-label="Жирный" onClick={() => formatText('bold')}><b>B</b></button>
-          <button type="button" title="Курсив" aria-label="Курсив" onClick={() => formatText('italic')}><i>I</i></button>
-          <button type="button" title="Подчёркнутый" aria-label="Подчёркнутый" onClick={() => formatText('underline')}><u>U</u></button>
-          <button type="button" title="Зачёркнутый" aria-label="Зачёркнутый" onClick={() => formatText('strikeThrough')}><s>S</s></button>
-        </div>
         <div className="story-toolbar-group">
-          <button type="button" title="Маркированный список" onClick={() => formatText('insertUnorderedList')}>• Список</button>
-          <button type="button" title="Нумерованный список" onClick={() => formatText('insertOrderedList')}>1. Список</button>
           <button type="button" disabled={busyImage} onClick={() => { saveSelection(); imageInputRef.current?.click(); }}><ImagePlus size={14}/>{busyImage ? 'Загружаем…' : 'Вставить фото'}</button>
         </div>
         <input ref={imageInputRef} className="inline-image-input" type="file" accept="image/*" onChange={e => addImageAtCursor(e.target.files?.[0])}/>
