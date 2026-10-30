@@ -157,14 +157,14 @@ function Avatar({ character, size = 'md', className = '' }) {
 function EmptyState({ icon: Icon = Sparkles, title, text, action, actionLabel }) {
   return <div className="empty-state"><span className="empty-ornament">✦</span><div className="empty-icon"><Icon size={24} /></div><h3>{title}</h3><p>{text}</p>{action && <Button icon={Plus} onClick={action}>{actionLabel || 'Добавить'}</Button>}</div>;
 }
-function Modal({ title, subtitle, onClose, children, wide = false }) {
+function Modal({ title, subtitle, onClose, children, wide = false, className = '' }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
   return <div className="modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
-    <section className={`modal-panel ${wide ? 'modal-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+    <section className={`modal-panel ${wide ? 'modal-wide' : ''} ${className}`} role="dialog" aria-modal="true" aria-label={title}>
       <div className="modal-head"><div><p className="eyebrow">✦ SIM STORY UNIVERSE</p><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div><IconButton title="Закрыть" onClick={onClose}><X size={19} /></IconButton></div>
       <div className="modal-body">{children}</div>
     </section>
@@ -1291,7 +1291,7 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
     } catch (e2) { setError(e2.message || 'Не удалось сохранить главу.'); }
     finally { setSaveBusy(false); }
   };
-  return <Modal title={record ? 'Редактировать главу' : 'Новая глава'} subtitle="Пиши историю как в Notion: текст и фотографии в одном общем поле." onClose={onClose} wide>
+  return <Modal title={record ? 'Редактировать главу' : 'Новая глава'} subtitle="Пиши историю как в Notion: текст и фотографии в одном общем поле." onClose={onClose} wide className="story-editor-modal">
     <form className="editor-form story-editor-form" onSubmit={submit}>
       <div className="form-grid-two"><FormField label="Название главы" value={form.title} onChange={v => setForm(p => ({...p,title:v}))} placeholder="Например, Дом, в котором горит свет" required/><FormField label="Подзаголовок" value={form.subtitle} onChange={v => setForm(p => ({...p,subtitle:v}))} placeholder="Глава 01 · Начало чего-то нового"/></div>
       <label className="form-field"><span>Глава династии / поколение</span><select value={form.chapter_id || ''} onChange={e => setForm(p => ({...p, chapter_id: e.target.value || null}))}><option value="">Без главы — общий архив</option>{chapters.slice().sort((a,b) => Number(a.sort_order || 0)-Number(b.sort_order || 0)).map(chapter => <option key={chapter.id} value={chapter.id}>Поколение {chapter.generation || 1} · {chapter.title}</option>)}</select><small>История появится внутри выбранной главы.</small></label>
@@ -1300,11 +1300,23 @@ function StoryModal({ record, chapters = [], onClose, onSave, uploadImage, delet
       <label className="form-field"><span>Фото для карточки главы</span><select value={form.cover_url || ''} onChange={e => setForm(prev => ({ ...prev, cover_url: e.target.value }))}><option value="">Авто — первая фотография в тексте</option>{safeArray(form.blocks).filter(block => block.type === 'image' && block.url).map((block, index) => <option key={`${block.url}-${index}`} value={block.url}>{block.caption?.trim() || block.alt?.trim() || `Фотография ${index + 1}`}</option>)}</select><small>Добавь фото в текст ниже, и оно появится в списке. Можно выбрать другую обложку, не меняя расположение фото в самой главе.</small></label>
       <div className="form-section-heading"><span>✧</span><div><b>Текст истории</b><small>Пиши подряд, нажимай Enter для нового абзаца, вставляй фото в любое место. Черновик сохраняется автоматически на этом устройстве.</small></div></div>
       {draftRecovered && <div className="form-note">✦ Я восстановила несохранённый черновик этой истории. После успешного сохранения он будет очищен.</div>}
-      <div className="inline-story-toolbar" onMouseDown={saveSelection}>
-        <button type="button" onClick={() => formatText('formatBlock','<p>')}><Feather size={14}/> Текст</button>
-        <button type="button" onClick={() => formatText('formatBlock','<h3>')}>H₃ Заголовок</button>
-        <button type="button" onClick={() => formatText('formatBlock','<blockquote>')}><Quote size={14}/> Цитата</button>
-        <button type="button" disabled={busyImage} onClick={() => { saveSelection(); imageInputRef.current?.click(); }}><ImagePlus size={14}/>{busyImage ? 'Загружаем…' : 'Вставить фото'}</button>
+      <div className="inline-story-toolbar" onMouseDown={saveSelection} role="toolbar" aria-label="Форматирование текста">
+        <div className="story-toolbar-group">
+          <button type="button" title="Обычный текст" onClick={() => formatText('formatBlock','<p>')}><Feather size={14}/> Текст</button>
+          <button type="button" title="Заголовок" onClick={() => formatText('formatBlock','<h3>')}>H₃ Заголовок</button>
+          <button type="button" title="Цитата" onClick={() => formatText('formatBlock','<blockquote>')}><Quote size={14}/> Цитата</button>
+        </div>
+        <div className="story-toolbar-group story-toolbar-marks">
+          <button type="button" title="Жирный" aria-label="Жирный" onClick={() => formatText('bold')}><b>B</b></button>
+          <button type="button" title="Курсив" aria-label="Курсив" onClick={() => formatText('italic')}><i>I</i></button>
+          <button type="button" title="Подчёркнутый" aria-label="Подчёркнутый" onClick={() => formatText('underline')}><u>U</u></button>
+          <button type="button" title="Зачёркнутый" aria-label="Зачёркнутый" onClick={() => formatText('strikeThrough')}><s>S</s></button>
+        </div>
+        <div className="story-toolbar-group">
+          <button type="button" title="Маркированный список" onClick={() => formatText('insertUnorderedList')}>• Список</button>
+          <button type="button" title="Нумерованный список" onClick={() => formatText('insertOrderedList')}>1. Список</button>
+          <button type="button" disabled={busyImage} onClick={() => { saveSelection(); imageInputRef.current?.click(); }}><ImagePlus size={14}/>{busyImage ? 'Загружаем…' : 'Вставить фото'}</button>
+        </div>
         <input ref={imageInputRef} className="inline-image-input" type="file" accept="image/*" onChange={e => addImageAtCursor(e.target.files?.[0])}/>
       </div>
       <div ref={editorRef} className="inline-story-editor" contentEditable suppressContentEditableWarning role="textbox" aria-label="Текст истории" aria-multiline="true" onInput={() => { saveSelection(); setForm(prev => ({ ...prev, blocks: readEditorBlocks() })); }} onKeyUp={saveSelection} onMouseUp={saveSelection} onClick={handleEditorClick} onDragOver={e => { if (Array.from(e.dataTransfer?.types || []).includes('Files')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } }} onDrop={handleEditorDrop} onPaste={handleEditorPaste} data-placeholder="Пиши здесь. Перетащи фото из папки прямо в текст или скопируй фото и вставь Ctrl/Cmd+V. Можно также нажать «Вставить фото»."/>
@@ -1349,5 +1361,5 @@ function CharacterDetail({ character: c, relationships, characters, stories = []
 
 function StoryReader({ story: s, canEdit, onEdit, onClose }) {
   const blocks = safeArray(s.blocks).length ? s.blocks : (s.content || '').split(/\n\s*\n/).filter(Boolean).map(text => ({ type: 'paragraph', text }));
-  return <Modal title={s.title || 'История'} subtitle={s.subtitle || 'Из архива династии'} onClose={onClose} wide><article className="story-reader"><div className="story-reader-cover" style={s.cover_url ? { backgroundImage: `linear-gradient(rgba(248,232,238,.78), rgba(248,232,238,.78)), url("${s.cover_url}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}><div className="reader-cover-overline">SIM STORY UNIVERSE · CHAPTER</div><div className="reader-cover-number">{s.created_at ? new Date(s.created_at).getDate().toString().padStart(2,'0') : '✧'}</div><h2>{s.title}</h2>{s.subtitle && <p>{s.subtitle}</p>}<span className="reader-cover-flower">✿</span><span className="reader-cover-mood">{s.mood || 'История'} · {s.created_at ? new Date(s.created_at).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}) : 'без даты'}</span></div>{s.quote && <blockquote className="reader-opening-quote"><Quote size={20}/><p>{s.quote}</p><span>— из этой главы</span></blockquote>}<div className="story-reader-body">{blocks.map((b,i) => b.type === 'heading' ? <h3 key={i}>{b.text}</h3> : b.type === 'quote' ? <blockquote key={i} className="reader-inline-quote">“{b.text}”</blockquote> : b.type === 'image' ? b.url ? <figure className="reader-figure" key={i}><img src={b.url} alt={b.alt || b.caption || ''}/>{b.caption && <figcaption><span>✧</span> {b.caption}</figcaption>}</figure> : null : <p key={i}>{b.text}</p>)}</div>{safeArray(s.tags).length>0 && <div className="reader-tags">{s.tags.map(t => <TagPill key={t}>{t}</TagPill>)}</div>}<div className="reader-end-mark"><span>✧</span><span>конец главы</span><span>✧</span></div>{canEdit && <div className="reader-edit-bottom"><Button icon={Pencil} onClick={() => onEdit(s)}>Редактировать главу</Button></div>}</article></Modal>;
+  return <Modal title={s.title || 'История'} subtitle={s.subtitle || 'Из архива династии'} onClose={onClose} wide className="story-reader-modal"><article className="story-reader"><div className="story-reader-cover" style={s.cover_url ? { backgroundImage: `linear-gradient(rgba(248,232,238,.78), rgba(248,232,238,.78)), url("${s.cover_url}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}><div className="reader-cover-overline">SIM STORY UNIVERSE · CHAPTER</div><div className="reader-cover-number">{s.created_at ? new Date(s.created_at).getDate().toString().padStart(2,'0') : '✧'}</div><h2>{s.title}</h2>{s.subtitle && <p>{s.subtitle}</p>}<span className="reader-cover-flower">✿</span><span className="reader-cover-mood">{s.mood || 'История'} · {s.created_at ? new Date(s.created_at).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}) : 'без даты'}</span></div>{s.quote && <blockquote className="reader-opening-quote"><Quote size={20}/><p>{s.quote}</p><span>— из этой главы</span></blockquote>}<div className="story-reader-body">{blocks.map((b,i) => b.type === 'heading' ? <h3 key={i}>{b.text}</h3> : b.type === 'quote' ? <blockquote key={i} className="reader-inline-quote">“{b.text}”</blockquote> : b.type === 'image' ? b.url ? <figure className="reader-figure" key={i}><img src={b.url} alt={b.alt || b.caption || ''}/>{b.caption && <figcaption><span>✧</span> {b.caption}</figcaption>}</figure> : null : <p key={i}>{b.text}</p>)}</div>{safeArray(s.tags).length>0 && <div className="reader-tags">{s.tags.map(t => <TagPill key={t}>{t}</TagPill>)}</div>}<div className="reader-end-mark"><span>✧</span><span>конец главы</span><span>✧</span></div>{canEdit && <div className="reader-edit-bottom"><Button icon={Pencil} onClick={() => onEdit(s)}>Редактировать главу</Button></div>}</article></Modal>;
 }
