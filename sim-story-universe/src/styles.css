@@ -1539,9 +1539,9 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   flex: 1 1 auto;
   padding: 28px clamp(16px, 5vw, 72px) 48px;
 }
-.story-reader { max-width: 980px; width: 100%; margin: 0 auto; }
+.story-reader { width: 100%; max-width: none; margin: 0; }
 .story-reader-cover { min-height: clamp(230px, 32vh, 360px); }
-.story-reader-body { max-width: 790px; margin: 0 auto; padding: 10px clamp(8px, 3vw, 42px); }
+.story-reader-body { width: 100%; max-width: none; margin: 0; padding: 10px clamp(12px, 2.5vw, 40px); }
 .story-reader-body p { font-size: clamp(15px, 1.25vw, 18px); line-height: 2; }
 .story-reader-body h3 { font-size: clamp(23px, 2vw, 30px); }
 .story-editor-modal .modal-body { padding-top: 22px; }
