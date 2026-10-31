@@ -899,3 +899,24 @@ html body .top-search { background: #30233c !important; border-color: #78576b !i
 html body .toolbar-search > span { background: #5d4155 !important; color: #f7c49c !important; }
 html body .toast { background: #34263d !important; color: #ffe5d2 !important; border-color: #846078 !important; }
 html body .toast-error { background: #532d3b !important; border-color: #ad6268 !important; }
+
+
+/* Final tiny remnants found in the base stylesheet audit. */
+html body .tiny-login:hover,
+html body .btn-danger-ghost,
+html body .age-photo-editor-actions button {
+  background: #493145 !important;
+  border-color: #835a6b !important;
+  color: #ffd5b5 !important;
+}
+html body .btn-danger-ghost:hover { background: #663b46 !important; }
+html body .orb-two { background: rgba(185,122,159,.08) !important; }
+html body .splash-doodle { background: #48344b !important; color: #f1b781 !important; }
+html body .age-photo-card-copy > span {
+  background: #52394d !important;
+  color: #ffdaa7 !important;
+}
+html body .age-photo-editor-card,
+html body .age-photo-card { border-color: #74536b !important; }
+html body .age-photo-editor-card :is(b,span,small),
+html body .age-photo-card :is(b,span,small) { color: #f1d5df !important; }
