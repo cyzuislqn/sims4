@@ -1625,3 +1625,87 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   max-height: none;
   height: auto;
 }
+
+/* Halloween 2026 — reversible pastel spooky seasonal skin. */
+:root {
+  --halloween-pumpkin: #c98153;
+  --halloween-plum: #74516f;
+  --halloween-lilac: #e7d8ed;
+}
+.app-shell {
+  background:
+    radial-gradient(ellipse at 90% 3%, rgba(232, 206, 165, .29), transparent 34%),
+    radial-gradient(ellipse at 10% 70%, rgba(214, 191, 224, .23), transparent 42%),
+    #fbf6f4;
+}
+.brand-mark {
+  background: linear-gradient(145deg, #d9a0ac, #b98072);
+  box-shadow: 0 7px 19px rgba(154, 97, 92, .18);
+}
+.brand-mark::after {
+  content: '🎃';
+  position: absolute;
+  top: -9px;
+  right: -11px;
+  font-size: 18px;
+  transform: rotate(14deg);
+  filter: drop-shadow(0 2px 2px rgba(80, 47, 51, .12));
+}
+.sidebar::after {
+  content: '✦  spooky season  ✦  🦇';
+  display: block;
+  margin: 18px auto 2px;
+  padding: 9px 12px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #ead9e5;
+  border-radius: 99px;
+  background: linear-gradient(110deg, #fff5e9, #f7eafa);
+  color: #947188;
+  font-size: 10px;
+  letter-spacing: .5px;
+  text-align: center;
+  pointer-events: none;
+}
+.decor-heart::after {
+  content: '🦇';
+  position: absolute;
+  top: 37px;
+  left: -12px;
+  font-size: 25px;
+  opacity: .9;
+}
+.decor-star::after {
+  content: '👻';
+  position: absolute;
+  bottom: 33px;
+  right: 6px;
+  font-size: 28px;
+  opacity: .88;
+}
+.page-header h1::after {
+  content: ' ✧ 🎃';
+  display: inline;
+  font-size: .55em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.page-header, .hero-card, .story-card, .character-card, .moment-card {
+  border-color: #ecdde4;
+}
+.story-card:hover, .character-card:hover, .moment-card:hover {
+  box-shadow: 0 12px 30px rgba(116, 81, 111, .13);
+}
+::selection { background: #f3d6bd; color: #6f4d65; }
+@media (prefers-reduced-motion: no-preference) {
+  .brand-mark::after { animation: halloween-wiggle 5s ease-in-out infinite; }
+  @keyframes halloween-wiggle {
+    0%, 85%, 100% { transform: rotate(14deg); }
+    90% { transform: rotate(-8deg); }
+    95% { transform: rotate(20deg); }
+  }
+}
+@media (max-width: 700px) {
+  .sidebar::after { display: none; }
+  .page-header h1::after { font-size: .48em; }
+}
