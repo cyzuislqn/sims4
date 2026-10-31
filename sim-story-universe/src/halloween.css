@@ -456,3 +456,445 @@ html .ssu-progress { background: #f0a55e; }
 @media (prefers-reduced-motion: reduce) {
   html .brand-mark::after { animation: none !important; }
 }
+
+
+/* ===============================================================
+   HALLOWEEN COMPLETENESS PASS — remaining light surfaces
+   All selectors are sourced from existing JSX/styles. Keep this
+   below the base Halloween skin to override its older rules.
+   =============================================================== */
+
+/* Relationship summary ("12 нитей...") and every relationship tile */
+html body .relationship-summary {
+  background: linear-gradient(118deg, #3d293e, #291e34 74%, #443042) !important;
+  border: 1px solid #916047 !important;
+  box-shadow: 0 10px 28px rgba(8,5,15,.30), inset 0 0 35px rgba(241,155,87,.035);
+}
+html body .relationship-summary-icon {
+  color: #ffc188 !important;
+  background: linear-gradient(145deg, #714651, #533550) !important;
+  border: 1px solid #b87d60;
+  box-shadow: 0 0 18px rgba(245,158,77,.13);
+}
+html body .relationship-summary-icon svg { color: #ffc188 !important; stroke: currentColor; }
+html body .relationship-summary b { color: #ffe5c6 !important; }
+html body .relationship-summary p { color: #d9bfd1 !important; }
+html body .relationship-type-counts span { color: #ecd0d1 !important; }
+html body .relationship-type-counts i { outline: 1px solid rgba(255,230,207,.3); outline-offset: 2px; }
+html body .relationship-card {
+  background: linear-gradient(145deg, #302238, #281d34) !important;
+  border: 1px solid #64455c !important;
+}
+html body .relationship-card:hover {
+  border-color: #c48d65 !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.28) !important;
+}
+html body .relationship-card .relation-person b { color: #ffe4ca !important; }
+html body .relationship-card .relation-person small,
+html body .relationship-card .relation-description { color: #d2b8ce !important; }
+html body .relation-connector span { background: #2d2038 !important; color: #edaa89; }
+html body .relation-connector { border-color: #bb8194; }
+html body .relation-kind { border: 1px solid rgba(255,213,185,.22); }
+html body .relation-status { background: #523a4f !important; color: #f6c8a3 !important; }
+html body .relation-actions,
+html body .selected-relation-actions { background: rgba(36,25,43,.92) !important; border-radius: 9px; }
+html body .relationship-scales-editor,
+html body .selected-relationship {
+  background: #302339 !important;
+  border-color: #75516a !important;
+}
+html body .selected-relation-icon { background: #614152 !important; color: #f5bb80; }
+html body .selected-relation-copy b { color: #ffe2c4 !important; }
+html body .selected-relation-copy small,
+html body .selected-relation-copy p { color: #ddc3d1 !important; }
+html body .relationship-scale-mini > span { color: #dcc0d2 !important; }
+html body .relationship-scale-mini > i { background: #61465b !important; }
+
+/* The sidebar's generation control and the ACTUAL latest-story button */
+html body .season-generation-input {
+  background: #2a1d31 !important;
+  color: #ffe5be !important;
+  border: 1px solid #a56a5e !important;
+}
+html body .season-generation-input:focus {
+  border-color: #f0af73 !important;
+  box-shadow: 0 0 0 2px rgba(239,170,103,.21) !important;
+}
+html body .sidebar-latest-story {
+  background: linear-gradient(120deg, #493245, #34263c) !important;
+  border: 1px solid #926252 !important;
+  color: #f4c6a6 !important;
+  box-shadow: 0 5px 14px rgba(0,0,0,.17);
+}
+html body .sidebar-latest-story:hover {
+  background: #61404c !important;
+  border-color: #f3b470 !important;
+}
+html body .sidebar-latest-story span { color: #e8b78e !important; }
+html body .sidebar-latest-story b { color: #fff0d4 !important; }
+html body .sidebar-latest-story svg { color: #f9bd7e !important; }
+html body .sidebar-season .season-label { color: #f8c788 !important; }
+html body .sidebar-season p { color: #e7d1dd !important; }
+html body .sidebar-season p b { color: #ffe7c2 !important; }
+html body .season-progress { background: #62445a !important; }
+
+/* The ACTUAL inspiration strip and sign-off at the bottom of Home */
+html body .inspiration-strip {
+  background:
+    radial-gradient(circle at 92% 25%, rgba(244,161,88,.12), transparent 30%),
+    linear-gradient(110deg, #483049, #2e223b 68%, #392941) !important;
+  border: 1px solid #a47360 !important;
+  box-shadow: 0 14px 32px rgba(0,0,0,.23), inset 0 0 28px rgba(241,176,99,.025);
+}
+html body .inspiration-strip::before {
+  content: '✧';
+  position: absolute;
+  right: 8%;
+  top: -26px;
+  color: rgba(255,197,130,.24);
+  font-size: 90px;
+  pointer-events: none;
+}
+html body .inspiration-icon {
+  background: linear-gradient(145deg, #7e4a4d, #603b59) !important;
+  color: #ffd19a !important;
+  border: 1px solid #ba8367;
+  box-shadow: 0 0 18px rgba(230,150,83,.15);
+}
+html body .inspiration-icon svg { color: #ffd19a !important; stroke: currentColor; }
+html body .inspiration-strip .eyebrow { color: #f6bd81 !important; }
+html body .inspiration-strip h3 { color: #ffe6c6 !important; }
+html body .inspiration-strip p { color: #e4c9da !important; }
+html body .inspiration-strip .btn { position: relative; z-index: 1; }
+html body .strip-doodle { color: #f1af86 !important; }
+html body .home-bottom-line { color: #cbb0c5 !important; }
+html body .home-bottom-line span { color: #ecab72 !important; }
+html body .home-bottom-line::after { content: '  🦇'; color: #edac80; }
+
+/* Home dashboard pieces and illustrated thumbnail placeholders */
+html body .recent-story,
+html body .favorite-card,
+html body .mini-empty,
+html body .quote-card,
+html body .empty-state,
+html body .inline-empty {
+  background: linear-gradient(145deg, #30233b, #271d33) !important;
+  border-color: #684a61 !important;
+}
+html body .quote-card::after { color: rgba(245,169,104,.15); }
+html body .quote-card blockquote { color: #f7d8ce !important; }
+html body .quote-card-top,
+html body .quote-card-bottom { color: #e9b38c !important; }
+html body .quote-card-top button {
+  color: #ffc38b !important;
+  background: #4d3550 !important;
+  border-color: #866077 !important;
+}
+html body .mini-empty :is(b,p), html body .inline-empty > span { color: #e8cbd6 !important; }
+html body .mini-empty-icon,
+html body .empty-icon,
+html body .result-icon { background: #583a51 !important; color: #ffbd80 !important; }
+html body .favorite-star { background: #674445 !important; color: #f8be7b !important; }
+html body .story-thumbnail {
+  background: linear-gradient(152deg, #4d365d, #392b51 56%, #68506b) !important;
+}
+html body .thumb-sun {
+  background: #ffdda0 !important;
+  box-shadow: 0 0 20px rgba(255,191,107,.4);
+}
+html body .story-thumbnail::before,
+html body .story-thumbnail::after,
+html body .thumb-hill { background: #34354d !important; }
+html body .thumb-flower,
+html body .stat-spark { color: #f1b679 !important; }
+html body .stat-card :is(strong,b) { color: #ffe3c3 !important; }
+
+/* Character archive, generation cards, navigation and avatars */
+html body .chapter-toolbar,
+html body .dynasty-chapter,
+html body .unassigned-chapter,
+html body .generation-tab,
+html body .character-role-tabs,
+html body .character-role-tab.is-active {
+  background: #302238 !important;
+  border-color: #68475f !important;
+  color: #e4c9d9 !important;
+}
+html body .dynasty-chapter[open] { border-color: #c28966 !important; }
+html body .dynasty-chapter-number,
+html body .generation-archive-mark {
+  background: #624053 !important;
+  color: #ffcb91 !important;
+}
+html body .dynasty-chapter-heading > b,
+html body .dynasty-chapter-summary b,
+html body .generation-tab > b { color: #ffe6c6 !important; }
+html body .dynasty-chapter-kicker,
+html body .generation-tab > span { color: #edaf83 !important; }
+html body .dynasty-chapter :is(p,small),
+html body .generation-tab > small { color: #d3bccc !important; }
+html body .generation-tab.is-active {
+  background: linear-gradient(130deg, #694456, #403047) !important;
+  border-color: #e5a36f !important;
+  box-shadow: inset 0 0 0 1px rgba(255,186,116,.16);
+}
+html body .generation-tab.is-active > b { color: #ffcc96 !important; }
+html body .character-role-tab {
+  color: #dbbfd0 !important;
+  border-color: transparent;
+}
+html body .character-role-tab.is-active {
+  color: #ffdebd !important;
+  border-color: #ad765e !important;
+}
+html body .character-role-tab .role-tab-symbol { color: #efb27c !important; }
+html body .character-role-tab b,
+html body .character-role-tab.is-active b {
+  background: #644757 !important;
+  color: #ffd4a1 !important;
+}
+html body .character-card-1 .character-portrait,
+html body .character-card-2 .character-portrait,
+html body .character-card-3 .character-portrait,
+html body .character-portrait:not(.has-portrait-image) {
+  background: linear-gradient(143deg, #453351, #392c47 55%, #624255) !important;
+}
+html body .avatar {
+  background: linear-gradient(140deg, #62445b, #44344f) !important;
+  border-color: rgba(249,205,166,.37) !important;
+  color: #f9c69d !important;
+}
+html body .trait-row span { background: #503850 !important; color: #f4ceb0 !important; }
+html body .card-actions {
+  background: rgba(37,26,42,.95) !important;
+  border-color: #805d70 !important;
+}
+html body .character-death-notice,
+html body .character-card-dead:not(.has-portrait-image) .character-card-main {
+  background: linear-gradient(120deg, #3a3442, #272430) !important;
+  border-color: #686070 !important;
+}
+html body .character-death-notice :is(b,strong,p,span) { color: #ddcad5 !important; }
+
+/* Story archives including chapter ribbons and portrait placeholder motifs */
+html body .story-card-1 .story-card-visual,
+html body .story-card-2 .story-card-visual,
+html body .story-card-3 .story-card-visual {
+  background-image: linear-gradient(140deg, #523851, #342843, #59404b) !important;
+}
+html body .story-card-ribbon { background: rgba(40,29,48,.9) !important; border-color: #88626a !important; color: #ffcfaa !important; }
+html body .doodle-moon { background: #ffdb9b !important; box-shadow: 0 0 17px rgba(255,186,94,.4); }
+html body .story-card-actions { background: rgba(40,29,48,.92) !important; }
+html body .story-card .story-card-meta { color: #e2b5a2 !important; }
+html body .story-title-button small { color: #c9aac2 !important; }
+
+/* Ideas archive, status tabs and miniature decorations */
+html body .idea-mantra,
+html body .idea-card-3,
+html body .idea-card-4 {
+  background: linear-gradient(120deg, #392740, #30233d) !important;
+  border-color: #6c4a63 !important;
+}
+html body .idea-mantra { color: #f4b78c !important; }
+html body .idea-mantra b { color: #ffe5c6 !important; }
+html body .idea-mantra p { color: #dbc0d3 !important; }
+html body .mantra-cat,
+html body .idea-decoration { color: #e7af86 !important; }
+html body .idea-status {
+  background: #563b4c !important;
+  color: #f3cda7 !important;
+  border-color: #835d69 !important;
+}
+html body .idea-card-footer { border-color: #65485c !important; }
+html body .idea-card-footer > span { color: #dcb9cb !important; }
+
+/* Search pages: suggested prompts, tag variants, chips, results */
+html body .big-search,
+html body .quick-search-suggestions button,
+html body .tag-cloud-1, html body .tag-cloud-2,
+html body .tag-cloud-3, html body .tag-cloud-4,
+html body .search-empty-splash,
+html body .result-group-head small,
+html body .result-status,
+html body .tag-cloud-chip span {
+  background: #33253f !important;
+  color: #f1cfb5 !important;
+  border-color: #704d64 !important;
+}
+html body .tag-cloud-chip:hover,
+html body .tag-cloud-chip.selected {
+  background: #684458 !important;
+  color: #ffe0b8 !important;
+  border-color: #b88564 !important;
+}
+html body .big-search button { background: #563d50 !important; color: #ffd0a5 !important; }
+html body .search-hero > div:nth-child(2) b { color: #ffe3c4 !important; }
+html body .search-result-card b { color: #ffe4c6 !important; }
+html body .search-result-card small { color: #d1b5cb !important; }
+html body .search-star { color: #e7b881 !important; }
+
+/* Family tree canvas / tool overlays, not changing lines' data colours */
+html body .tree-tools,
+html body .tree-empty,
+html body .tree-focus-button,
+html body .tree-node-secondary,
+html body .tree-node-relationship-hints {
+  background: #34263e !important;
+  border-color: #78536c !important;
+  color: #f1d8dc !important;
+}
+html body .tree-focus-button:hover { background: #52394e !important; }
+html body .tree-node-relationship-hints :is(span,b,p) { color: #f2d4cb !important; }
+html body .tree-node-secondary :is(b,small,span) { color: #e5cdd7 !important; }
+html body .tree-corner-label, html body .tree-legend { color: #eac6ba !important; }
+html body .tree-board-hint { color: #ecd4db !important; }
+
+/* All nested editor controls, not only the modal background */
+html body .form-section-heading > span,
+html body .character-photo-editor,
+html body .upload-photo-button,
+html body .favorite-toggle,
+html body .fake-check,
+html body .favorite-toggle > input:not(:checked) + .fake-check,
+html body .form-note,
+html body .story-block-editor,
+html body .story-block-editor.block-quote,
+html body .story-block-editor.block-heading,
+html body .add-block-row,
+html body .add-block-row button,
+html body .image-dropzone,
+html body .image-dropzone:hover,
+html body .image-block-preview,
+html body .login-illustration,
+html body .login-illustration-lock,
+html body .login-demo,
+html body .backup-illustration,
+html body .backup-file,
+html body .backup-option-icon,
+html body .import-confirm,
+html body .backup-tip,
+html body .confirm-icon,
+html body .setup-steps p,
+html body .setup-steps p > span,
+html body .age-photo-upload-panel,
+html body .age-photo-editor-card,
+html body .age-photo-card,
+html body .moment-image-editor-card,
+html body .moment-character-picker label,
+html body .moment-reader-gallery figure,
+html body .moment-reader-link {
+  background: #34263e !important;
+  border-color: #75546b !important;
+  color: #efd6df !important;
+}
+html body .modal-body .form-field input,
+html body .modal-body .form-field select,
+html body .modal-body .form-field textarea,
+html body .modal-body .big-search {
+  background: #30223b !important;
+  border-color: #79546a !important;
+  color: #ffe8dd !important;
+}
+html body .story-block-editor.block-quote,
+html body .inline-story-editor blockquote {
+  background: #443047 !important;
+  border-left-color: #e2a36e !important;
+  color: #f1d5d2 !important;
+}
+html body .add-block-row button:hover { background: #5a3e53 !important; }
+html body .image-block-preview img,
+html body .age-photo-editor-card img,
+html body .age-photo-card img,
+html body .moment-image-editor-card > img,
+html body .inline-story-editor figure.inline-story-image img {
+  background: #261b32 !important;
+}
+html body .image-block-preview button {
+  background: rgba(41,29,49,.92) !important;
+  color: #ffd2a5 !important;
+}
+html body .inline-story-toolbar button {
+  background: #4c3650 !important;
+  border-color: #805b6e !important;
+  color: #ffe0c5 !important;
+}
+html body .inline-story-toolbar button:hover { background: #6c455b !important; }
+html body .inline-story-editor :is(h1,h2,h3) { color: #ffd49f !important; }
+html body .inline-story-editor p { color: #f1dce4 !important; }
+html body .inline-story-editor.is-drop-target { background: #4d3150 !important; }
+html body .form-error, html body .error-banner {
+  background: #4b2936 !important;
+  border-color: #a35f61 !important;
+  color: #ffd6c8 !important;
+}
+html body .form-note, html body .demo-banner {
+  background: #433349 !important;
+  border-color: #93745e !important;
+  color: #f4d1ac !important;
+}
+html body .auth-info, html body .readonly-banner {
+  background: #29453b !important;
+  border-color: #567f66 !important;
+  color: #d3e9cf !important;
+}
+html body .form-field > span b { color: #ffbd86 !important; }
+
+/* Character dossiers / traits, dreams, fears and secrets */
+html body .detail-portrait {
+  background: linear-gradient(155deg, #49324b, #31263d) !important;
+  border-color: #82586a !important;
+}
+html body .detail-portrait::before { color: rgba(255,192,117,.13); }
+html body .detail-mini-note,
+html body .detail-secret-card,
+html body .dream-card,
+html body .fear-card,
+html body .secret-section {
+  background: #36283f !important;
+  border-color: #73536b !important;
+  color: #edcfda !important;
+}
+html body .detail-mini-note p,
+html body .detail-lead,
+html body .detail-info-row > p { color: #dec5d3 !important; }
+html body .detail-info-row > span { color: #deb79f !important; }
+html body .detail-section { border-color: #65475a !important; }
+html body .detail-relation-row:hover { background: #493146 !important; }
+html body .detail-section h3 { color: #ffe5c4 !important; }
+html body .detail-prose { color: #e5cfda !important; }
+
+/* Moments: photo picker, timeline, gallery, badge */
+html body .moments-intro,
+html body .moment-image-editor-card,
+html body .moment-reader-gallery figure,
+html body .moment-reader-link {
+  background: #30223b !important;
+  border-color: #765469 !important;
+  color: #f0d5da !important;
+}
+html body .moments-intro p,
+html body .moments-intro b { color: #edd2d7 !important; }
+html body .moment-character-picker label.is-selected {
+  background: #634354 !important;
+  border-color: #dc9a6a !important;
+  color: #ffe0b9 !important;
+}
+html body .moment-age-label { background: #604052 !important; color: #ffcf9b !important; }
+html body .moment-reader { color: #ead6e0 !important; }
+html body .moment-reader-description,
+html body .moment-reader-text p,
+html body .moment-reader-people,
+html body .moment-reader-gallery figcaption { color: #e5c9d8 !important; }
+html body .moment-reader-link { color: #ffc994 !important; }
+
+/* Selectors with icon or SVG ink originally pale pink */
+html body :is(
+  .relationship-summary,.inspiration-strip,.sidebar-latest-story,
+  .idea-mantra,.search-hero,.stat-card,.story-intro-note,
+  .moments-intro,.modal-head,.tree-tools
+) > svg { color: #f5bb82 !important; stroke: currentColor; }
+html body .toolbar-search,
+html body .top-search { background: #30233c !important; border-color: #78576b !important; }
+html body .toolbar-search > span { background: #5d4155 !important; color: #f7c49c !important; }
+html body .toast { background: #34263d !important; color: #ffe5d2 !important; border-color: #846078 !important; }
+html body .toast-error { background: #532d3b !important; border-color: #ad6268 !important; }
