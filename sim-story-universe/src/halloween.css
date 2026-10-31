@@ -1,0 +1,458 @@
+/*
+ * SIM STORY UNIVERSE / HALLOWEEN NIGHT
+ * Seasonal visual overhaul, loaded AFTER styles.css and enhance.css.
+ * Remove the import in main.jsx to return to the original theme.
+ * No app state, stories or Supabase data are changed.
+ */
+:root,
+html[data-theme="night"] {
+  --h-bg: #130f1d;
+  --h-night: #1b1428;
+  --h-panel: #251a32;
+  --h-panel-soft: #30223a;
+  --h-line: #5a3b56;
+  --h-line-bright: #996550;
+  --h-ivory: #fff1d9;
+  --h-text: #f4e7e0;
+  --h-muted: #cbb5c6;
+  --h-gold: #f3ba6e;
+  --h-amber: #eb9554;
+  --h-pumpkin: #df7944;
+  --h-lilac: #cda8e0;
+  --h-mint: #a5c5ac;
+  --ink: #f4e7e0;
+  --ink-soft: #d5c3d1;
+  --muted: #ae99ae;
+  --line: #583e55;
+  --blush: #38273a;
+  --blush-mid: #65445e;
+  --rose: #ecaa80;
+  --rose-deep: #f5bf7f;
+  --plum: #e7c7d7;
+  --cream: #241a2d;
+  --white: #2e2238;
+  --shadow: 0 10px 28px rgba(8,5,15,.35);
+  --shadow-hover: 0 16px 38px rgba(8,5,15,.48);
+  color: var(--h-text);
+  color-scheme: dark;
+}
+html, html body, #root {
+  background: var(--h-bg) !important;
+  color: var(--h-text);
+}
+html body ::selection { background: #bd733e; color: #201523; }
+html body * { scrollbar-color: #83506c #211829; }
+html body ::-webkit-scrollbar-thumb { background: #704b69; border-color: #211829; }
+html .app-shell, html[data-theme="night"] .app-shell {
+  background:
+    radial-gradient(ellipse at 88% 4%, rgba(238,142,71,.18), transparent 31%),
+    radial-gradient(ellipse at 20% 84%, rgba(143,85,151,.21), transparent 39%),
+    linear-gradient(155deg,#130e1d 0%,#1a1327 44%,#120f1c 100%) !important;
+}
+html .app-shell::before, html[data-theme="night"] .app-shell::before {
+  background:
+    radial-gradient(circle at 77% 16%, rgba(250,194,115,.11) 0 2%, transparent 12%),
+    radial-gradient(ellipse at 17% 23%, rgba(124,65,126,.2),transparent 55%),
+    radial-gradient(ellipse at 68% 76%, rgba(125,60,79,.12),transparent 56%) !important;
+  filter: blur(30px);
+}
+html .app-shell::after {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle,#fce0ad 1px,transparent 1.6px),
+    radial-gradient(circle,#caa6df 1px,transparent 1.6px);
+  background-size: 173px 197px,251px 217px;
+  background-position: 30px 32px,92px 104px;
+  opacity: .16;
+}
+
+/* Sidebar / navigation become a dark haunted-library cabinet. */
+html .sidebar, html[data-theme="night"] .sidebar {
+  background: linear-gradient(180deg,rgba(37,25,46,.98),rgba(24,18,36,.99)) !important;
+  border-right: 1px solid #614258 !important;
+  box-shadow: 12px 0 34px rgba(7,4,12,.21);
+}
+html .brand-name, html[data-theme="night"] .brand-name { color: #ffe9cd !important; }
+html .brand-name strong { color: #ffe9cd !important; }
+html .brand-name small { color: #d29b7e !important; }
+html .brand-mark {
+  background: linear-gradient(140deg,#f2a85e,#a64c47) !important;
+  color: #28172a;
+  box-shadow: 0 0 0 1px #efb278,0 8px 25px rgba(235,127,69,.24) !important;
+}
+html .brand-mark::after { content: '🦇'; top: -14px; right: -13px; font-size: 23px; }
+html .sidebar-season, html[data-theme="night"] .sidebar-season {
+  background: linear-gradient(135deg,#403042,#2b2036) !important;
+  border: 1px solid #81576a !important;
+  box-shadow: inset 0 0 30px rgba(238,151,75,.035);
+}
+html .sidebar-season::after { content: '🎃'; font-size: 25px; color: #f4b575; }
+html .season-label, html .season-dot { color: var(--h-gold) !important; }
+html .season-dot { background: #f0ae67 !important; box-shadow: 0 0 0 4px #634153 !important; }
+html .sidebar-season p,
+html .sidebar-season small { color: #e3cede !important; }
+html .sidebar-season p b { color: #ffe5ba !important; }
+html .season-progress { background: #5b405a; }
+html .season-progress span { background: linear-gradient(90deg,#a75a63,#f5b66b); }
+html .nav-caption { color: #a889a7 !important; }
+html .nav-item, html[data-theme="night"] .nav-item { color: #dbc9dd !important; }
+html .nav-item svg { color: #c59ab7; }
+html .nav-item:hover, html[data-theme="night"] .nav-item:hover {
+  background: #443047 !important;
+  color: #ffe7c8 !important;
+}
+html .nav-item.active, html[data-theme="night"] .nav-item.active {
+  background: linear-gradient(90deg,#61404d,#412f44) !important;
+  color: #ffe8c6 !important;
+  box-shadow: inset 3px 0 0 var(--h-amber),0 4px 14px rgba(0,0,0,.15);
+}
+html .nav-item.active svg { color: #ffc077 !important; }
+html .nav-item small, html[data-theme="night"] .nav-item small {
+  background: #483449 !important; color: #ffd49a !important;
+}
+html .sidebar-mini-quote {
+  background: #2d2136 !important; border-color: #62435c !important; color: #d9b9d5;
+}
+html .sidebar-mini-quote p { color: #e5cfda !important; }
+html .sidebar-mini-quote span { color: #b99db3 !important; }
+html .sidebar-user { border-color: #594153; }
+html .sidebar-user strong { color: #f5dfd7 !important; }
+html .sidebar-user small { color: #bfa8bd !important; }
+html .user-avatar { background: #5d3c54; color: #f6c27f; }
+html .sidebar::after {
+  content: '✦  ALL HALLOWS EVE  ✦';
+  color: #f2b674;
+  background: #3d2b3e;
+  border: 1px solid #765268;
+  letter-spacing: 1.7px;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+/* Top bar + chapter titles on the midnight stage. */
+html .topbar, html[data-theme="night"] .topbar {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(225,167,117,.23) !important;
+}
+html .breadcrumb, html .breadcrumb svg { color: #bba5bb; }
+html .breadcrumb strong { color: #f1d8c5; }
+html .page-header h1, html[data-theme="night"] .page-header h1 {
+  color: #ffe6c5 !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor;
+  text-shadow: 0 2px 23px rgba(242,154,80,.1);
+}
+html .page-header h1::after { content: ' ✦ 🦇'; font-size: .43em; }
+html .eyebrow { color: #efb478 !important; letter-spacing: 2px; }
+html .page-header p, html[data-theme="night"] .page-header p { color: #c5aec2 !important; }
+html .section-title h2, html .section-title h3 { color: #f7dec5 !important; }
+html .section-title .title-flower { color: #eca55d !important; }
+html .muted-count { background: #3f2b42; color: #e8b98a; }
+html .site-footer { border-color: #60425b; color: #bda5b9; }
+html .site-footer b { color: #f5b36d; }
+html .site-footer button { color: #edb98c; }
+
+/* Framing, controls and calls to action. */
+html .btn-primary {
+  background: linear-gradient(135deg,#f1b16d,#d96f41) !important;
+  color: #251624 !important;
+  border-color: #f4b772 !important;
+  box-shadow: 0 8px 22px rgba(222,109,50,.24);
+}
+html .btn-primary:hover:not(:disabled) { box-shadow: 0 11px 27px rgba(235,130,59,.33); }
+html .btn-soft, html .btn-white,
+html .btn-secondary, html .btn-ghost,
+html .top-login, html .filter-chip, html .sort-select,
+html .top-search, html .toolbar-search,
+html .big-search,
+html .icon-button, html[data-theme="night"] .icon-button {
+  background: #33253c !important;
+  color: #f3d9cc !important;
+  border-color: #66465f !important;
+}
+html .btn-soft:hover, html .btn-white:hover,
+html .top-login:hover, html .icon-button:hover { background: #4c3448 !important; }
+html .filter-chip.is-on {
+  background: #704448 !important; color: #ffe3b9 !important; border-color: #cb8354 !important;
+}
+html .top-search input, html .toolbar-search input,
+html .big-search input, html .sort-select select,
+html[data-theme="night"] .top-search input {
+  color: #ffeadb !important;
+  background: transparent !important;
+}
+html input::placeholder, html textarea::placeholder { color: #b19aae !important; }
+html .top-search kbd { background: #453349; border-color: #77556e; color: #e3c5d1; }
+html .text-link, html .story-card-bottom > button, html .icon-button svg { color: #f3b77e; }
+html .tag-pill, html[data-theme="night"] .tag-pill,
+html .tag-cloud-chip { background: #604354 !important; color: #ffe1b6 !important; }
+html .connection-badge.online { background: #28433b; color: #c2e7ba; }
+html .connection-badge.demo { background: #4d3b30; color: #ffe0a4; }
+html .connection-badge.offline { background: #513037; color: #f7c1ad; }
+
+/* Rich, illustrated Halloween hero with a glowing moon and violet hills. */
+html .hero-card, html[data-theme="night"] .hero-card {
+  background:
+    radial-gradient(circle at 84% 26%,rgba(245,167,82,.20),transparent 26%),
+    radial-gradient(circle at 18% 70%,rgba(170,90,130,.15),transparent 46%),
+    linear-gradient(115deg,#3b2747,#261b38 63%,#32273f) !important;
+  border: 1px solid #91596a !important;
+  box-shadow: inset 0 0 70px rgba(241,144,77,.04),0 20px 48px rgba(0,0,0,.32);
+}
+html .hero-card::before {
+  content: '✦   ✧     ✦';
+  position: absolute;
+  top: 20px;
+  left: 49%;
+  color: #eacb8b;
+  font-size: 20px;
+  letter-spacing: 13px;
+  opacity: .6;
+  pointer-events: none;
+}
+html .hero-card::after {
+  content: '☾  THE HAUNTED ARCHIVE  ✦';
+  position: absolute;
+  right: 21px;
+  bottom: 19px;
+  border: 1px solid #a37063;
+  color: #ffd3a2;
+  border-radius: 99px;
+  background: rgba(28,19,37,.6);
+  padding: 8px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  pointer-events: none;
+}
+html .hero-overline, html .hero-overline span { color: #f7bc83 !important; }
+html .hero-copy h1, html[data-theme="night"] .hero-card h1 { color: #ffecd3 !important; }
+html .hero-copy h1 em { color: #f3ad6c !important; }
+html .hero-copy > p, html[data-theme="night"] .hero-card p { color: #e2c8d9 !important; }
+html .hero-footnote, html .hero-footnote span { color: #eabc9a !important; }
+html .hero-window {
+  border-color: #8c6078 !important;
+  background: #231d37;
+  box-shadow: 0 0 35px rgba(238,166,103,.17),0 18px 25px rgba(0,0,0,.32);
+}
+html .window-sky { background: linear-gradient(#241936 0%,#4e345d 58%,#75435e 100%) !important; }
+html .sun-dot {
+  width: 49px; height: 49px;
+  background: #ffe4a7 !important;
+  box-shadow: 0 0 22px 8px rgba(255,207,117,.43),0 0 0 16px rgba(255,216,145,.09) !important;
+}
+html .cloudlet { background: rgba(215,164,187,.22); }
+html .hill-back { background: #4c3b58 !important; }
+html .hill-front { background: #262941 !important; }
+html .window-cross-h, html .window-cross-v { background: #91677e !important; }
+html .flower-pot { color: #ef965f; }
+html .floating-note, html[data-theme="night"] .floating-note {
+  background: rgba(52,34,58,.92) !important;
+  color: #f9d2b3 !important;
+  border-color: #916273 !important;
+}
+html .hero-cat { color: #efb16c; }
+html .hero-side-stamp { color: #f7cfaa; border-color: #b9807d; }
+html .decor-heart { color: #efaa6c !important; }
+html .decor-star { color: #d1a5db !important; }
+
+/* Surface system: midnight plum panels instead of pale pink cards. */
+html :is(
+  .stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.result-group,.detail-section,.detail-secret-card,
+  .detail-relation-row,.character-moment-row,.backup-option,
+  .story-intro-note,.moments-intro,.search-hero,
+  .search-empty-splash,.tag-cloud-section,.reader-opening-quote
+),
+html[data-theme="night"] :is(
+  .stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.result-group,.detail-section,.detail-secret-card,
+  .detail-relation-row,.character-moment-row,.backup-option
+) {
+  background: linear-gradient(155deg,#2b2038 0%,#261c32 78%,#2f2138 100%) !important;
+  border-color: #60445d !important;
+  color: #efdeec !important;
+  box-shadow: 0 8px 26px rgba(6,4,12,.21);
+}
+html :is(.stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.detail-section,.character-moment-row):hover {
+  border-color: #ab755c !important;
+  box-shadow: 0 12px 35px rgba(6,4,12,.4),0 0 0 1px rgba(225,150,87,.08) !important;
+}
+html :is(.stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.detail-section,.detail-secret-card,
+  .detail-relation-row,.character-moment-row,.result-group)
+  :is(h1,h2,h3,h4,b,strong) {
+  color: #ffe5c9 !important;
+}
+html :is(.stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.detail-section,.detail-secret-card,
+  .detail-relation-row,.character-moment-row,.result-group)
+  :is(p,small) {
+  color: #cfbad0 !important;
+}
+html :is(.stat-card,.story-card,.character-card,.moment-card,.idea-card,
+  .favorite-card,.recent-story,.quote-card,.relationship-card,
+  .search-result-card,.detail-section,.detail-relation-row)
+  :is(.tag-pill,.moment-card-meta,.story-card-meta,.character-age) {
+  color: #e7ba92 !important;
+}
+html .story-card-visual,
+html .story-card-1 .story-card-visual,
+html .story-card-2 .story-card-visual,
+html .story-card-3 .story-card-visual {
+  background-color: #473047;
+  background-image: linear-gradient(140deg,#493151,#372942 62%,#5b3a47);
+  color: #f7d5bc;
+}
+html .story-card-visual::before { opacity: .7; }
+html .story-card-body, html .moment-card-copy { background: transparent; }
+html .story-card-bottom { border-color: #583f57; }
+html .story-card-actions, html .moment-card-actions { background: rgba(36,24,43,.92) !important; }
+html .story-card-ribbon { background: #7d4850; color: #ffe8bc; }
+html .stat-pink { background: #59334d; color: #f2ae9c; }
+html .stat-lilac { background: #49385d; color: #d9b8f0; }
+html .stat-peach { background: #654136; color: #f5bd79; }
+html .stat-mint { background: #335146; color: #bbdec2; }
+html .idea-card-0,html .idea-card-1,html .idea-card-2 { background: #2d2138 !important; }
+html .character-portrait { background-color: #433047; }
+html .moment-card-cover { background: linear-gradient(145deg,#422940,#483257,#654032); }
+html .empty-state { color: #d5bfd0; }
+html .empty-state p, html .search-empty-splash p { color: #c4aac2 !important; }
+
+/* Witchy search and family-tree workspaces. */
+html .search-hero-icon { background: #633f55; color: #f8bd7e; }
+html .search-hero b, html .search-hero h3 { color: #ffdfc1 !important; }
+html .search-hero p { color: #d1b9cc !important; }
+html .tree-board, html[data-theme="night"] .tree-board,
+html .tree-board-frame, html[data-theme="night"] .tree-board-frame {
+  background-color: #1e192b !important;
+  background-image: radial-gradient(#60445e 1px,transparent 1px) !important;
+  background-size: 23px 23px !important;
+  border-color: #664b60 !important;
+}
+html .tree-node {
+  background: rgba(47,34,54,.98) !important;
+  border-color: #946a69 !important;
+  box-shadow: 0 7px 24px rgba(0,0,0,.34) !important;
+}
+html .tree-node:hover { border-color: #e5a669 !important; }
+html .tree-node :is(b,strong,h3,h4) { color: #ffe1bd !important; }
+html .tree-node :is(span,small,p) { color: #d8c0d2; }
+html .tree-board-hint, html .tree-legend, html .tree-tools {
+  background: rgba(45,32,52,.9);
+  color: #ebd1d9;
+  border-color: #79546d;
+}
+
+/* Full-screen editor + reading window: storybook pages after dark. */
+html .modal-backdrop, html[data-theme="night"] .modal-backdrop {
+  background: rgba(5,4,12,.8) !important;
+  backdrop-filter: blur(9px);
+}
+html .modal-panel, html[data-theme="night"] .modal-panel {
+  background: #21192e !important;
+  border-color: #7a5063 !important;
+  color: #f7e7e5 !important;
+  box-shadow: 0 30px 95px rgba(0,0,0,.65);
+}
+html .modal-head {
+  background: linear-gradient(125deg,#35243e,#251b32) !important;
+  border-color: #67465b !important;
+}
+html .modal-head h2 { color: #ffe5c6 !important; }
+html .modal-head p:not(.eyebrow) { color: #d1b6c7 !important; }
+html .modal-body { background: #21192e; }
+html .form-field > span, html .form-section-heading { color: #f5ceac !important; }
+html .form-field input, html[data-theme="night"] .form-field input,
+html .form-field textarea, html[data-theme="night"] .form-field textarea,
+html .form-field select, html[data-theme="night"] .form-field select,
+html .inline-story-editor {
+  background: #2d2238 !important;
+  color: #f4e5e1 !important;
+  border-color: #654860 !important;
+}
+html .form-field input:focus, html .form-field textarea:focus,
+html .form-field select:focus { border-color: #e2a16b !important; }
+html .modal-actions, html .story-editor-form .modal-actions {
+  background: linear-gradient(0deg,#21192e 75%,rgba(33,25,46,0)) !important;
+}
+html .story-reader-cover {
+  background:
+    radial-gradient(circle at 78% 24%,rgba(245,184,104,.23),transparent 25%),
+    linear-gradient(125deg,#46304e,#271f39 64%,#53324d) !important;
+  border-color: #946b76 !important;
+}
+html .story-reader-cover h2 { color: #ffe5c6 !important; }
+html .story-reader-cover p, html .story-reader-cover span { color: #dcb9c8 !important; }
+html .story-reader-body { background: #21192e; }
+html .story-reader-body p, html[data-theme="night"] .story-reader-body p { color: #e8d7dd !important; }
+html .story-reader-body h3 { color: #ffc98e !important; }
+html .story-reader-body :is(ul,ol,li) { color: #e8d7dd !important; }
+html .reader-inline-quote { color: #f5c18f !important; border-color: #d58a57; }
+html .reader-figure img { border: 1px solid #6c4b62; box-shadow: 0 13px 35px rgba(0,0,0,.35); }
+html .reader-figure figcaption { color: #d2a9ba !important; }
+html .story-reader .reader-end-mark { color: #f1b572; }
+html .inline-story-toolbar { background: #3a2943 !important; border-color: #704f65 !important; }
+html .inline-story-toolbar button { color: #f4d5c8 !important; }
+html .inline-story-toolbar button:hover { background: #59405b !important; }
+html .inline-story-editor figure.inline-story-image { background: #241b2e; }
+
+/* Seasonal flourish without obscuring images or interactive content. */
+html .hero-window::after {
+  content: '🦇';
+  position: absolute;
+  top: 11px;
+  left: 15px;
+  z-index: 3;
+  font-size: 21px;
+  transform: rotate(-9deg);
+}
+html .hero-art::after {
+  content: '🎃';
+  position: absolute;
+  bottom: 12px;
+  right: 3px;
+  z-index: 4;
+  font-size: 46px;
+  filter: drop-shadow(0 0 12px rgba(234,132,62,.35));
+  pointer-events: none;
+}
+html .decor-cloud::after {
+  content: '🕸️';
+  display: block;
+  font-size: 58px;
+  opacity: .65;
+}
+html .story-reader-cover::before { border-color: rgba(249,190,123,.22); }
+html .story-reader-cover::after { opacity: .18; }
+html .ssu-theme-toggle {
+  display: none !important; /* Day/night toggle is hidden while the fixed Halloween skin is active. */
+}
+html .ssu-progress { background: #f0a55e; }
+
+/* Responsive: atmosphere remains, floating ornaments do not obstruct taps. */
+@media (max-width: 960px) {
+  html .hero-card { padding: 32px 26px; }
+  html .hero-card::after { right: 14px; bottom: 11px; font-size: 8px; }
+}
+@media (max-width: 700px) {
+  html .hero-card { padding: 26px 18px 55px; }
+  html .hero-card::after { right: 14px; bottom: 11px; }
+  html .hero-art::after { font-size: 29px; right: 0; }
+  html .page-header h1::after { font-size: .35em; }
+  html .decor-cloud::after { display: none; }
+  html .modal-panel { border-left: 0 !important; border-right: 0 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .brand-mark::after { animation: none !important; }
+}
