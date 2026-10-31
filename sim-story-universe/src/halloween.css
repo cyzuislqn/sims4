@@ -680,7 +680,8 @@ html body .character-death-notice :is(b,strong,p,span) { color: #ddcad5 !importa
 html body .story-card-1 .story-card-visual,
 html body .story-card-2 .story-card-visual,
 html body .story-card-3 .story-card-visual {
-  background-image: linear-gradient(140deg, #523851, #342843, #59404b) !important;
+  /* No !important here: the story's uploaded cover is set inline in App.jsx. */
+  background-image: linear-gradient(140deg, #523851, #342843, #59404b);
 }
 html body .story-card-ribbon { background: rgba(40,29,48,.9) !important; border-color: #88626a !important; color: #ffcfaa !important; }
 html body .doodle-moon { background: #ffdb9b !important; box-shadow: 0 0 17px rgba(255,186,94,.4); }
