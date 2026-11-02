@@ -1709,3 +1709,287 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   .sidebar::after { display: none; }
   .page-header h1::after { font-size: .48em; }
 }
+
+
+/* ===============================================================
+   CHARACTER FILES / FIRST CHAPTERS
+   Three personal milestones: linked Sim, when it happened, story.
+   =============================================================== */
+.character-card,
+.character-card-main { height: 100%; }
+.character-card-main { cursor: pointer; }
+.character-card-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  padding: 18px 17px 16px;
+}
+.character-card .character-portrait { height: 215px; }
+.character-card.has-portrait-image .character-card-main {
+  min-height: 0;
+  height: 100%;
+  isolation: auto;
+}
+.character-card.has-portrait-image .character-portrait {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  height: 215px;
+  min-height: 0;
+}
+.character-card.has-portrait-image .character-card-info {
+  margin-top: 0;
+  padding: 18px 17px 16px;
+  color: var(--ink);
+  background: transparent;
+}
+.character-card.has-portrait-image .character-name-row h3,
+.character-card.has-portrait-image .character-summary,
+.character-card.has-portrait-image .character-card-footer,
+.character-card.has-portrait-image .character-card-footer span {
+  color: inherit;
+  text-shadow: none;
+}
+.character-card.has-portrait-image .character-name-row h3 { color: #6b5060; }
+.character-card.has-portrait-image .character-summary { color: #8f7984; }
+.character-card.has-portrait-image .character-card-footer { color: #b198a4; }
+.character-card.has-portrait-image .character-card-footer span:last-child { color: #bf829b; }
+.character-card.has-portrait-image .character-card-background { object-position: center 35%; }
+.character-career {
+  margin: 7px 0 0;
+  color: #a4788f;
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.character-card .character-summary {
+  font-size: 11px;
+  line-height: 1.55;
+  min-height: 0;
+  margin: 10px 0 0;
+  -webkit-line-clamp: 3;
+}
+.character-firsts-preview {
+  margin-top: 17px;
+  padding: 13px 12px 8px;
+  border: 1px solid #ead7df;
+  border-radius: 14px;
+  background: linear-gradient(145deg,#fff8f9,#f9edf1);
+}
+.character-firsts-caption {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  color: #b97895;
+  margin-bottom: 9px;
+}
+.character-firsts-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 0;
+  border-top: 1px solid rgba(185,135,156,.18);
+  min-width: 0;
+}
+.character-firsts-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 9px;
+  flex: 0 0 25px;
+  display: grid;
+  place-items: center;
+  font: 700 15px/1 var(--serif);
+  background: #f1dfe8;
+  color: #b06c8e;
+}
+.character-firsts-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.character-firsts-copy b {
+  font-size: 11px;
+  line-height: 1.3;
+  color: #745368;
+}
+.character-firsts-copy small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #a27e92;
+  overflow-wrap: anywhere;
+}
+.character-firsts-copy em {
+  color: #9b8290;
+  font-style: normal;
+  font-size: 10px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+.character-card-footer { margin-top: auto; padding-top: 15px; }
+.character-card.has-portrait-image .character-card-footer { border-top-color: #f4e8eb; }
+
+/* Milestone editing in the character form */
+.life-firsts-editor {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.life-firsts-editor-card {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid #ead8e1;
+  background: linear-gradient(125deg,#fff9fa,#f8f0f6);
+}
+.life-firsts-editor-title {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.life-firsts-editor-title > span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+  background: #f0dbe6;
+  color: #a86588;
+  font: 600 24px var(--serif);
+}
+.life-firsts-editor-title b {
+  display: block;
+  font: 600 19px/1.25 var(--serif);
+  color: #79566b;
+}
+.life-firsts-editor-title small {
+  display: block;
+  color: #ad8c9d;
+  font-size: 10px;
+  margin-top: 4px;
+}
+.life-firsts-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+.life-firsts-editor-card .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.life-firsts-editor-card .form-field > span {
+  font-size: 11px;
+  color: #947487;
+  font-weight: 600;
+}
+.life-firsts-editor-card .form-field input,
+.life-firsts-editor-card .form-field select,
+.life-firsts-editor-card .form-field textarea {
+  width: 100%;
+  min-width: 0;
+  background: #fffdfd;
+  color: #705265;
+  border: 1px solid #e8d6df;
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 12px;
+}
+.life-firsts-editor-card .form-field textarea { min-height: 82px; resize: vertical; }
+.life-firsts-editor-card .form-field input:focus,
+.life-firsts-editor-card .form-field select:focus,
+.life-firsts-editor-card .form-field textarea:focus {
+  outline: 2px solid rgba(195,127,160,.24);
+  border-color: #c68aa6;
+}
+.life-firsts-editor-card .life-firsts-editor-fields + .form-field { margin-top: 13px; }
+
+/* Personal firsts as a readable three-part timeline in character dossiers */
+.life-firsts-section { padding-bottom: 22px; }
+.life-firsts-intro { margin: 0 0 16px; color: #a18a99; font-size: 11px; line-height: 1.6; }
+.life-firsts-timeline { display: flex; flex-direction: column; gap: 11px; }
+.life-firsts-event {
+  display: grid;
+  grid-template-columns: 43px minmax(0,1fr);
+  gap: 13px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff8fa;
+  border: 1px solid #eddee6;
+  min-width: 0;
+}
+.life-firsts-event.is-filled {
+  background: linear-gradient(125deg,#fff8f9,#f7eef5);
+  border-color: #e2c6d5;
+}
+.life-firsts-event-symbol {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  color: #b77598;
+  background: #f3e1e9;
+  font: 600 24px/1 var(--serif);
+}
+.life-firsts-event-body { min-width: 0; }
+.life-firsts-event-body > b {
+  display: block;
+  color: #79596e;
+  font: 600 16px/1.35 var(--serif);
+  margin: 2px 0 8px;
+}
+.life-firsts-partner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 5px 9px 5px 5px;
+  border-radius: 99px;
+  border: 1px solid #e5cedb;
+  background: #fffdfd;
+  color: #80556d;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.life-firsts-partner:hover { background: #f3e2ec; border-color: #c48ca7; }
+.life-firsts-partner .avatar { width: 27px; height: 27px; flex: 0 0 27px; }
+.life-firsts-partner span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.life-firsts-partner-missing,
+.life-firsts-not-yet { display: block; color: #b29aab; font-size: 11px; }
+.life-firsts-when {
+  display: block;
+  margin-top: 9px;
+  color: #b27e97;
+  font-size: 10px;
+  font-weight: 700;
+}
+.life-firsts-when::before { content: '✧ '; }
+.life-firsts-description {
+  margin: 9px 0 0;
+  color: #927b8b;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .character-card .character-portrait,
+  .character-card.has-portrait-image .character-portrait { height: 205px; }
+  .character-card.has-portrait-image .character-card-main { min-height: 0; }
+  .life-firsts-editor-fields { grid-template-columns: 1fr; }
+  .life-firsts-editor-card { padding: 14px; }
+  .life-firsts-event { padding: 13px; grid-template-columns: 37px minmax(0,1fr); gap: 10px; }
+  .life-firsts-event-symbol { width: 36px; height: 36px; font-size: 20px; }
+}
