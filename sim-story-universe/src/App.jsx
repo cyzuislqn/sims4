@@ -9,6 +9,7 @@ import {
   CalendarDays, Sparkles,
 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './supabase.js';
+import { LIFE_FIRSTS, readLifeFirst, hasLifeFirst } from './characterMilestones.js';
 
 const TABLES = ['chapters', 'characters', 'stories', 'relationships', 'family_tree', 'ideas', 'tags', 'moments'];
 const NAV = [
@@ -77,7 +78,7 @@ const isSecondaryCharacter = (character) => {
 };
 const AGE_STAGES = ['Инфант', 'Младенец', 'Малыш', 'Ребёнок', 'Подросток', 'Молодой', 'Взрослый', 'Пожилой', 'Другое'];
 const blankCharacter = () => ({
-  name: '', age: '', appearance: '', personality: '', traits: [], career: '', hobbies: '',
+  name: '', age: '', appearance: '', personality: '', traits: [], life_firsts: {}, career: '', hobbies: '',
   fears: '', dreams: '', biography: '', secrets: '', tags: [], portrait_url: '', age_photos: [], is_favorite: false,
   generation: 1, character_type: 'Побочный персонаж', is_alive: true, cause_of_death: '',
 });
@@ -491,7 +492,7 @@ setData(prev => ({
     const includes = (value) => String(value || '').toLocaleLowerCase('ru-RU').includes(q);
     const tagMatch = (row) => !selectedTag || safeArray(row.tags).includes(selectedTag);
     return {
-      characters: characters.filter(c => tagMatch(c) && (!q || [c.name,c.age,c.appearance,c.personality,c.career,c.hobbies,c.fears,c.dreams,c.biography,c.secrets,...safeArray(c.traits),...safeArray(c.tags)].some(includes))),
+      characters: characters.filter(c => tagMatch(c) && (!q || [c.name,c.appearance,c.personality,c.career,c.hobbies,c.fears,c.dreams,c.biography,c.secrets,...LIFE_FIRSTS.flatMap(({key}) => { const first = readLifeFirst(c, key); return [first.when, first.description, characters.find(x => x.id === first.character_id)?.name]; }),...safeArray(c.tags)].some(includes))),
       stories: stories.filter(s => tagMatch(s) && (!q || [s.title,s.subtitle,s.content,s.quote,s.mood,...safeArray(s.tags),...safeArray(s.blocks).map(b => b.text || b.caption)].some(includes))),
       relationships: relationships.filter(r => {
         const from = characters.find(c => c.id === r.from_character)?.name || '';
@@ -683,7 +684,7 @@ function CharactersPage({ characters, relationships, onCreate, onEdit, onOpen, o
   const [activeGeneration, setActiveGeneration] = useState(1); const [activeRole, setActiveRole] = useState('auto');
   const maxGeneration = Math.max(3, ...characters.map(c => Math.max(1, Number(c.generation) || 1)));
   const generations = Array.from({ length: maxGeneration }, (_, i) => i + 1);
-  const searched = useMemo(() => characters.filter(c => (!favoritesOnly || c.is_favorite) && [c.name,c.age,c.career,c.personality,...safeArray(c.tags),...safeArray(c.traits)].join(' ').toLocaleLowerCase('ru').includes(search.toLocaleLowerCase('ru')))
+  const searched = useMemo(() => characters.filter(c => (!favoritesOnly || c.is_favorite) && [c.name,c.career,c.personality,...LIFE_FIRSTS.flatMap(({key}) => { const first = readLifeFirst(c, key); return [first.when, first.description, characters.find(x => x.id === first.character_id)?.name]; }),...safeArray(c.tags)].join(' ').toLocaleLowerCase('ru').includes(search.toLocaleLowerCase('ru')))
     .sort((a, b) => sort === 'Имя'
       ? String(a.name || '').localeCompare(String(b.name || ''), 'ru')
       : new Date(b.created_at || 0) - new Date(a.created_at || 0))
@@ -711,13 +712,13 @@ function CharactersPage({ characters, relationships, onCreate, onEdit, onOpen, o
         </button>)}
       </div>
     </div>
-    <div className="list-toolbar"><label className="toolbar-search"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Имя, профессия, черта характера…"/><span>{searched.length}</span></label><button className={`filter-chip ${favoritesOnly ? 'is-on' : ''}`} onClick={() => setFavoritesOnly(!favoritesOnly)}><Heart size={15} fill={favoritesOnly ? 'currentColor' : 'none'}/> Избранное</button><label className="sort-select"><ListFilter size={15}/><select value={sort} onChange={e => setSort(e.target.value)}><option>Имя</option><option>Сначала новые</option></select><ChevronDown size={14}/></label></div>
-    {filtered.length ? <div className="character-grid">{filtered.map((c, index) => <CharacterCard key={c.id} character={c} relationships={relationships} index={index} onOpen={() => onOpen(c)} onEdit={() => onEdit(c)} onDelete={() => onDelete(c)} canEdit={canEdit} />)}</div> : <EmptyState icon={UserRound} title={search || favoritesOnly ? 'Никого не нашли' : `В поколении ${activeGeneration} пока нет персонажей в этой вкладке`} text={search || favoritesOnly ? 'Попробуй изменить поиск или снять фильтр.' : 'Добавь персонажа и укажи его поколение и роль в династии — он появится здесь.'} action={canEdit ? onCreate : undefined} actionLabel="Добавить персонажа" />}
+    <div className="list-toolbar"><label className="toolbar-search"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Имя, профессия, характер, первые события…"/><span>{searched.length}</span></label><button className={`filter-chip ${favoritesOnly ? 'is-on' : ''}`} onClick={() => setFavoritesOnly(!favoritesOnly)}><Heart size={15} fill={favoritesOnly ? 'currentColor' : 'none'}/> Избранное</button><label className="sort-select"><ListFilter size={15}/><select value={sort} onChange={e => setSort(e.target.value)}><option>Имя</option><option>Сначала новые</option></select><ChevronDown size={14}/></label></div>
+    {filtered.length ? <div className="character-grid">{filtered.map((c, index) => <CharacterCard key={c.id} character={c} characters={characters} relationships={relationships} index={index} onOpen={() => onOpen(c)} onEdit={() => onEdit(c)} onDelete={() => onDelete(c)} canEdit={canEdit} />)}</div> : <EmptyState icon={UserRound} title={search || favoritesOnly ? 'Никого не нашли' : `В поколении ${activeGeneration} пока нет персонажей в этой вкладке`} text={search || favoritesOnly ? 'Попробуй изменить поиск или снять фильтр.' : 'Добавь персонажа и укажи его поколение и роль в династии — он появится здесь.'} action={canEdit ? onCreate : undefined} actionLabel="Добавить персонажа" />}
   </div>;
 }
-function CharacterCard({ character: c, relationships, index, onOpen, onEdit, onDelete, canEdit }) {
+function CharacterCard({ character: c, characters, relationships, index, onOpen, onEdit, onDelete, canEdit }) {
   const relationCount = relationships.filter(r => r.from_character === c.id || r.to_character === c.id).length;
-  return <article className={`character-card character-card-${index % 4} ${c.portrait_url ? 'has-portrait-image' : ''} ${c.is_alive === false ? 'character-card-dead' : ''}`}><button className="character-card-main" onClick={onOpen}><div className="character-portrait">{c.portrait_url ? <img className="character-card-background" src={c.portrait_url} alt="" /> : <Avatar character={c} size="xl"/>}<div className="portrait-label">SIM FILE · {String(index+1).padStart(2,'0')}</div><div className="portrait-flowers">✿ ✧</div></div><div className="character-card-info"><div className="character-name-row"><h3>{c.name || 'Без имени'}</h3>{c.is_favorite && <Heart size={15} fill="currentColor" className="liked-heart"/>}</div><p className="character-age">{c.age || 'Возраст не указан'}{c.career ? ` · ${c.career}` : ''}</p>{c.personality && <p className="character-summary">{c.personality}</p>}<div className="trait-row">{safeArray(c.traits).slice(0,3).map(t => <span key={t}>{t}</span>)}</div><div className="character-card-footer"><span><Link2 size={14}/>{relationCount} связей</span><span>открыть досье <ChevronRight size={13}/></span></div></div>{c.is_alive === false && <><span className="death-stamp">МЕРТВ</span><span className="death-ribbon" aria-label="Персонаж умер"/></>}</button>
+  return <article className={`character-card character-card-${index % 4} ${c.portrait_url ? 'has-portrait-image' : ''} ${c.is_alive === false ? 'character-card-dead' : ''}`}><button className="character-card-main" onClick={onOpen}><div className="character-portrait">{c.portrait_url ? <img className="character-card-background" src={c.portrait_url} alt="" /> : <Avatar character={c} size="xl"/>}<div className="portrait-label">SIM FILE · {String(index+1).padStart(2,'0')}</div><div className="portrait-flowers">✿ ✧</div></div><div className="character-card-info"><div className="character-name-row"><h3>{c.name || 'Без имени'}</h3>{c.is_favorite && <Heart size={15} fill="currentColor" className="liked-heart"/>}</div>{c.career && <p className="character-career">✦ {c.career}</p>}{c.personality && <p className="character-summary">{c.personality}</p>}<div className="character-firsts-preview"><span className="character-firsts-caption">♡ ПЕРВЫЕ СОБЫТИЯ</span>{LIFE_FIRSTS.map(item => { const first = readLifeFirst(c, item.key); const partner = characters.find(person => person.id === first.character_id); return <div className="character-firsts-row" key={item.key}><span className="character-firsts-icon">{item.icon}</span><span className="character-firsts-copy"><b>{item.label}</b><small>{first.character_id ? partner?.name || 'Персонаж удалён' : hasLifeFirst(first) ? 'Персонаж не выбран' : 'Пока не записано'}{first.when ? ` · ${first.when}` : ''}</small>{first.description && <em>{first.description}</em>}</span></div>; })}</div><div className="character-card-footer"><span><Link2 size={14}/>{relationCount} связей</span><span>открыть досье <ChevronRight size={13}/></span></div></div>{c.is_alive === false && <><span className="death-stamp">МЕРТВ</span><span className="death-ribbon" aria-label="Персонаж умер"/></>}</button>
     {canEdit && <div className="card-actions"><IconButton title="Редактировать" onClick={onEdit}><Pencil size={15}/></IconButton><IconButton title="Удалить" onClick={onDelete}><Trash2 size={15}/></IconButton></div>}
   </article>;
 }
