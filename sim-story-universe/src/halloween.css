@@ -948,3 +948,88 @@ html body .age-photo-card :is(b,span,small) { color: #f1d5df !important; }
     content-visibility: auto;
   }
 }
+
+
+/* ===============================================================
+   HALLOWEEN / CHARACTER FIRST CHAPTERS
+   Full seasonal treatment for the redesigned Sim dossiers.
+   =============================================================== */
+html body .character-card.has-portrait-image .character-card-info,
+html body .character-card .character-card-info {
+  background: linear-gradient(165deg, #2e2239, #271d33) !important;
+  color: #f2dce5 !important;
+}
+html body .character-card.has-portrait-image .character-name-row h3,
+html body .character-card .character-name-row h3 { color: #ffe6c9 !important; text-shadow: none !important; }
+html body .character-card.has-portrait-image .character-summary,
+html body .character-card .character-summary { color: #d5bfcf !important; text-shadow: none !important; }
+html body .character-card .character-career { color: #e7ae7b !important; }
+html body .character-card .character-card-footer,
+html body .character-card.has-portrait-image .character-card-footer {
+  color: #cbb0c5 !important;
+  border-top-color: #61445d !important;
+}
+html body .character-card .character-card-footer span:last-child { color: #f4b47e !important; }
+html body .character-firsts-preview {
+  background: linear-gradient(135deg,#392b42,#32253d) !important;
+  border: 1px solid #785469 !important;
+  box-shadow: inset 0 1px 0 rgba(255,205,161,.06);
+}
+html body .character-firsts-caption { color: #f3b882 !important; }
+html body .character-firsts-row { border-top-color: rgba(221,170,131,.18) !important; }
+html body .character-firsts-icon {
+  background: #65434e !important;
+  color: #ffce9a !important;
+}
+html body .character-firsts-copy b { color: #ffe3ca !important; }
+html body .character-firsts-copy small { color: #d5b8c8 !important; }
+html body .character-firsts-copy em { color: #cdb5c5 !important; }
+html body .life-firsts-editor-card {
+  background: linear-gradient(130deg,#372940,#2c2139) !important;
+  border-color: #79526c !important;
+  box-shadow: 0 6px 22px rgba(0,0,0,.14);
+}
+html body .life-firsts-editor-title > span {
+  background: #704651 !important;
+  color: #ffd1a0 !important;
+}
+html body .life-firsts-editor-title b { color: #ffe5c7 !important; }
+html body .life-firsts-editor-title small { color: #d2b6c8 !important; }
+html body .life-firsts-editor-card .form-field > span { color: #f1c69d !important; }
+html body .life-firsts-editor-card .form-field input,
+html body .life-firsts-editor-card .form-field select,
+html body .life-firsts-editor-card .form-field textarea {
+  background: #281e35 !important;
+  border-color: #77516a !important;
+  color: #f8e3d7 !important;
+  color-scheme: dark;
+}
+html body .life-firsts-editor-card .form-field :is(input,select,textarea):focus {
+  outline-color: rgba(244,172,103,.27) !important;
+  border-color: #e7a16c !important;
+}
+html body .life-firsts-intro { color: #d4b8c9 !important; }
+html body .life-firsts-event,
+html body .life-firsts-event.is-filled {
+  background: linear-gradient(125deg,#39293f,#30233c) !important;
+  border: 1px solid #74516b !important;
+}
+html body .life-firsts-event.is-filled { border-color: #a27361 !important; }
+html body .life-firsts-event-symbol {
+  background: #6b4554 !important;
+  color: #ffca91 !important;
+}
+html body .life-firsts-event-body > b { color: #ffe6c6 !important; }
+html body .life-firsts-partner {
+  background: #4b334a !important;
+  border-color: #9a6a65 !important;
+  color: #ffe1bf !important;
+}
+html body .life-firsts-partner:hover {
+  background: #664452 !important;
+  border-color: #f1b87e !important;
+}
+html body .life-firsts-when { color: #efb17e !important; }
+html body .life-firsts-description { color: #e5cbd7 !important; }
+html body .life-firsts-partner-missing,
+html body .life-firsts-not-yet { color: #bba5bb !important; }
