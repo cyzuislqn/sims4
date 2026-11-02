@@ -1993,3 +1993,9 @@ button:disabled { opacity: .48; cursor: not-allowed; }
   .life-firsts-event { padding: 13px; grid-template-columns: 37px minmax(0,1fr); gap: 10px; }
   .life-firsts-event-symbol { width: 36px; height: 36px; font-size: 20px; }
 }
+
+/* Keep the freeform story note full width beneath the partner and time fields. */
+.life-firsts-editor-fields > .form-field:last-child { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .life-firsts-editor-fields > .form-field:last-child { grid-column: auto; }
+}
