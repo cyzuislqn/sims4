@@ -293,9 +293,10 @@ html .story-editor-modal .modal-body {
   background: linear-gradient(#fffcfe,#fff9fc) !important;
 }
 html .story-reader-cover {
+  /* Inline chapter cover photos must outrank this seasonal fallback. */
   background:
     radial-gradient(circle at 86% 17%,rgba(255,255,255,.77),transparent 43%),
-    linear-gradient(140deg,#f8dce9,#e7d8ed 60%,#fde7f1) !important;
+    linear-gradient(140deg,#f8dce9,#e7d8ed 60%,#fde7f1);
   border: 1px solid #e9c6d7 !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
 }
