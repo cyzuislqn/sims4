@@ -1,0 +1,501 @@
+/*
+ * SIM STORY UNIVERSE — PINK WINTER WONDERLAND
+ * 2026-27 New Year season • visual theme only.
+ * Loaded after styles.css and enhance.css. No story or database mutations.
+ * Palette: blush snow / rose velvet / frosted lilac / champagne gold.
+ */
+
+:root, html[data-theme="holiday"] {
+  color-scheme: light;
+  --ink: #614456;
+  --ink-soft: #806477;
+  --muted: #ab8899;
+  --line: #edd6e2;
+  --blush: #f9e6ee;
+  --blush-mid: #edc5d7;
+  --rose: #c9638d;
+  --rose-deep: #a94570;
+  --plum: #754760;
+  --cream: #fff8fb;
+  --white: #fffdfd;
+  --shadow: 0 12px 32px rgba(159,83,121,.095);
+  --shadow-hover: 0 20px 44px rgba(153,70,114,.16);
+  --ny-background: #fff7fb;
+  --ny-surface: #fffdfd;
+  --ny-surface-2: #fff5fa;
+  --ny-rose: #b94e7b;
+  --ny-rose-strong: #9c3c65;
+  --ny-gold: #bf9261;
+  --ny-snow: #ffffff;
+  --ny-sage: #82a69a;
+  --ny-border: #efd5e2;
+  --ny-text: #604156;
+}
+html, body {
+  background: #fff7fb !important;
+  color: #604156;
+}
+body { min-height: 100vh; }
+html .app-shell {
+  isolation: isolate;
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 52% 26% at 89% 4%,rgba(246,181,210,.40),transparent 78%),
+    radial-gradient(ellipse 34% 33% at 5% 46%,rgba(218,205,234,.24),transparent 74%),
+    radial-gradient(ellipse 45% 32% at 72% 92%,rgba(255,215,226,.27),transparent 72%),
+    linear-gradient(130deg,#fff8fc 3%,#fffbfd 48%,#fff5fa 100%) !important;
+}
+html .app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: .35;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle,rgba(199,125,158,.27) 1px,transparent 1.7px),
+    radial-gradient(circle,rgba(209,160,104,.32) 1px,transparent 1.7px),
+    radial-gradient(circle,rgba(255,255,255,.95) 2px,transparent 2.5px);
+  background-size: 123px 137px,173px 191px,241px 199px;
+  background-position: 15px 32px,80px 85px,125px 14px;
+}
+html .app-shell > .main-area,
+html .app-shell > .sidebar { position: relative; z-index: 1; }
+html .main-area { color: var(--ny-text); }
+::selection { background: #f4cbdc !important; color: #713654 !important; }
+
+/* Small seasonal marks replace every Halloween-only emoji from styles.css. */
+html .brand-mark::after {
+  content: "❄" !important;
+  animation: ny-twinkle 6s ease-in-out infinite !important;
+  top: -13px;
+  right: -11px;
+  font-family: Georgia,serif;
+  font-size: 22px;
+  color: #fffaff;
+  text-shadow: 0 2px 6px rgba(139,56,103,.35),0 0 8px rgba(255,255,255,.9);
+  transform: rotate(-13deg);
+  filter: none !important;
+}
+html .decor-heart::after {
+  content: "✧" !important;
+  color: #d58fac;
+  top: 38px;
+  left: -8px;
+  font-size: 29px;
+}
+html .decor-star::after {
+  content: "❄" !important;
+  color: #dbabc4;
+  bottom: 34px;
+  right: 5px;
+  font-size: 28px;
+}
+html .decor-heart, html .decor-star, html .decor-cloud {
+  color: #e8afc6 !important;
+  opacity: .5;
+}
+html .page-header h1::after {
+  content: "  ❄" !important;
+  color: #d49cb6 !important;
+  font-family: Georgia,serif;
+  font-size: .49em;
+  vertical-align: middle;
+}
+html .sidebar::after {
+  content: "✦  ЗИМНЯЯ СКАЗКА  ✦" !important;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 18px auto 2px;
+  padding: 9px 14px;
+  border: 1px solid #e3bece;
+  border-radius: 999px;
+  color: #a45378;
+  background: linear-gradient(110deg,#fff8fb,#f8e5ee);
+  box-shadow: 0 5px 16px rgba(173,99,129,.08);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-align: center;
+  pointer-events: none;
+}
+html .sidebar-season::after { content: "❄" !important; color: #d9a4bf !important; }
+html .sidebar-mini-quote::after { content: "✧" !important; color: #c997b4 !important; }
+html .home-bottom-line::after { content: "  ❄" !important; color: #b785a0; }
+
+/* Winter glass sidebar and navigation */
+html .sidebar {
+  background: linear-gradient(164deg,rgba(255,252,254,.97),rgba(255,241,248,.95) 70%,rgba(248,230,241,.96)) !important;
+  border-right: 1px solid #eacbd9 !important;
+  box-shadow: 9px 0 36px rgba(143,66,106,.05);
+}
+html .sidebar::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 5px;
+  background: repeating-linear-gradient(110deg,#d888a8 0 26px,#f2d9e5 26px 43px,#cba16d 43px 48px,#f2d9e5 48px 64px);
+}
+html .brand-mark {
+  position: relative;
+  background: linear-gradient(150deg,#e7a7c4,#c56694 69%,#ab4c7c) !important;
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow: 0 6px 20px rgba(176,82,126,.22),inset 0 1px 0 rgba(255,255,255,.5) !important;
+  color: #fff !important;
+}
+html .brand-mark svg { color: #fff !important; }
+html .brand-name { color: #70455d !important; }
+html .brand-name strong { color: #bd5683 !important; }
+html .brand-name small { color: #b2879d !important; }
+html .sidebar-season {
+  background:
+    radial-gradient(circle at 97% 4%,rgba(255,255,255,.86),transparent 35%),
+    linear-gradient(135deg,#fae7ef,#fff7fa 82%) !important;
+  border: 1px solid #e6bdcf !important;
+  box-shadow: inset 0 1px 0 #fff,0 8px 21px rgba(180,96,132,.07);
+}
+html .season-label { color: #a45075 !important; }
+html .season-dot { background: #c55d8a !important; box-shadow: 0 0 0 4px #f4d4e3 !important; }
+html .sidebar-season p { color: #947082 !important; }
+html .sidebar-season p b { color: #a64972 !important; }
+html .season-progress { background: #f0cfdf !important; }
+html .season-progress span { background: linear-gradient(90deg,#c55a8b,#e7a8c2,#c99a63) !important; }
+html .sidebar-season small { color: #ab8195 !important; }
+html .season-generation-input {
+  background: #fffaff !important;
+  color: #9e3f6b !important;
+  border: 1px solid #d8a3b9 !important;
+}
+html .season-generation-input:focus { border-color: #b34a7a !important; box-shadow: 0 0 0 2px #f3d5e3 !important; }
+html .sidebar-latest-story {
+  background: rgba(255,252,253,.9) !important;
+  border: 1px solid #e6c5d5 !important;
+  color: #9b5077 !important;
+  box-shadow: 0 4px 12px rgba(166,94,122,.05);
+}
+html .sidebar-latest-story span { color: #b6819c !important; }
+html .sidebar-latest-story b { color: #80506c !important; }
+html .sidebar-latest-story svg { color: #bd6590 !important; }
+html .sidebar-latest-story:hover { background: #fff !important; border-color: #c980a1 !important; }
+html .nav-caption { color: #b590a3 !important; }
+html .nav-item { color: #85697b !important; border: 1px solid transparent; border-radius: 12px; }
+html .nav-item svg { color: #bd92a6 !important; }
+html .nav-item:hover {
+  color: #a34b75 !important;
+  border-color: #f0d8e4 !important;
+  background: #fff9fc !important;
+}
+html .nav-item.active {
+  color: #a13e6f !important;
+  background: linear-gradient(90deg,#f4dce8,#fff2f8) !important;
+  border-color: #eec5d7 !important;
+  box-shadow: inset 3px 0 0 #c76290,0 5px 16px rgba(190,95,140,.08) !important;
+}
+html .nav-item.active svg { color: #ad4778 !important; }
+html .nav-item small { background: #f7deea !important; color: #ad5980 !important; }
+html .sidebar-mini-quote {
+  background: linear-gradient(150deg,#fffafc,#f9edf3) !important;
+  border: 1px solid #eed9e5 !important;
+  color: #bc80a0 !important;
+}
+html .sidebar-mini-quote p { color: #886879 !important; }
+html .sidebar-mini-quote span { color: #b1879e !important; }
+html .sidebar-user { border-color: #edd8e2 !important; }
+html .sidebar-user strong { color: #7f556c !important; }
+html .sidebar-user small { color: #b58a9f !important; }
+html .user-avatar { color: #bb5c87 !important; background: linear-gradient(145deg,#f3d7e5,#ffeef5) !important; }
+html .tiny-login { color: #ab6084 !important; }
+html .tiny-login:hover { background: #f6e2eb !important; }
+
+/* Header/navigation buttons, labels and form-like controls */
+html .topbar { border-bottom: 1px solid #f0dce6 !important; }
+html .breadcrumb,
+html .breadcrumb span { color: #aa8b9b !important; }
+html .eyebrow { color: #b96386 !important; letter-spacing: 1.7px; }
+html .page-header h1 { color: #6d4059 !important; }
+html .page-header h1 span { color: #d78eaf !important; }
+html .page-header p { color: #967686 !important; }
+html .section-title h2,
+html .section-title h3 { color: #765168 !important; }
+html .title-flower { color: #c994ae !important; }
+html .muted-copy { color: #a17c90 !important; }
+html .btn { border-radius: 12px; }
+html .btn-primary {
+  color: #fffaff !important;
+  border: 1px solid #b64e7f !important;
+  background: linear-gradient(125deg,#d679a0 0%,#bd5785 58%,#a54172 100%) !important;
+  box-shadow: 0 7px 17px rgba(181,72,122,.20),inset 0 1px 0 rgba(255,255,255,.25) !important;
+}
+html .btn-primary:hover:not(:disabled) { box-shadow: 0 11px 25px rgba(181,72,122,.27) !important; }
+html .btn-soft, html .btn-white,
+html .btn-secondary, html .btn-ghost,
+html .top-login, html .icon-button, html .filter-chip,
+html .sort-select, html .toolbar-search,
+html .top-search, html .big-search,
+html .tree-tools, html .tree-focus-button {
+  background: rgba(255,251,253,.95) !important;
+  color: #a6537d !important;
+  border-color: #e8cddc !important;
+}
+html .btn-soft:hover:not(:disabled), html .btn-white:hover:not(:disabled),
+html .icon-button:hover, html .top-login:hover, html .filter-chip:hover,
+html .tree-focus-button:hover {
+  color: #943c6a !important;
+  border-color: #d2a0b7 !important;
+  background: #f9e7f0 !important;
+}
+html .btn-danger { background: #bf667d !important; color: #fff !important; }
+html .btn-danger-ghost { background: #fff0f2 !important; border-color: #ebcbd3 !important; color: #ab596c !important; }
+html .btn-danger-ghost:hover { background: #ffe5eb !important; }
+html .text-link { color: #b0517c !important; }
+html .top-search input,
+html .toolbar-search input,
+html .sort-select select,
+html .big-search input,
+html .moments-date-filter input { color: #805b6e !important; }
+html input::placeholder, html textarea::placeholder { color: #bd9fad !important; }
+html .top-search:focus-within,
+html .toolbar-search:focus-within,
+html .big-search:focus-within { border-color: #c47ca0 !important; box-shadow: 0 0 0 3px rgba(223,158,185,.16) !important; }
+html .top-search kbd, html .toolbar-search > span,
+html .muted-count {
+  background: #f7e7f0 !important;
+  color: #b1648b !important;
+}
+html .filter-chip.is-on, html .generation-tab.is-active {
+  background: linear-gradient(135deg,#f3dce8,#ffeff6) !important;
+  border-color: #d69bb6 !important;
+  color: #a54e77 !important;
+}
+html .connection-badge.demo { background: #fff1dc !important; color: #916b4d !important; }
+html .connection-badge.online { background: #e7f4eb !important; color: #567d68 !important; }
+html .connection-badge.offline { background: #fff0f0 !important; color: #a96369 !important; }
+html .demo-banner, html .readonly-banner, html .error-banner {
+  background: #fffafc !important;
+  border-color: #eed1dd !important;
+  color: #895b74 !important;
+}
+html .ssu-theme-toggle { display: none !important; }
+html .ssu-progress { background: linear-gradient(90deg,#e9a7c4,#bf668f,#d7b27b) !important; }
+
+/* Winter storybook hero: luminous blush, golden stars, snow outside the window */
+html .hero-card {
+  background:
+    radial-gradient(ellipse 40% 70% at 91% 19%,rgba(255,252,250,.96),transparent 76%),
+    radial-gradient(ellipse 50% 68% at 31% 96%,rgba(247,199,222,.64),transparent 81%),
+    linear-gradient(117deg,#ffe9f1 0%,#fbe3ef 49%,#eedced 100%) !important;
+  border: 1px solid #e8bed2 !important;
+  border-radius: 27px !important;
+  box-shadow: 0 15px 36px rgba(170,87,133,.12),inset 0 1px 0 rgba(255,255,255,.93) !important;
+}
+html .hero-card::before {
+  content: "✦    ·    ✧        ✦      ·      ✧";
+  position: absolute;
+  top: 18px;
+  right: 2%;
+  color: rgba(174,96,135,.36);
+  font-size: 23px;
+  letter-spacing: 13px;
+  pointer-events: none;
+}
+html .hero-card::after {
+  content: "❄  НАЧИНАЕТСЯ СЕЗОН ВОЛШЕБСТВА  ✧";
+  position: absolute;
+  right: 24px;
+  bottom: 17px;
+  z-index: 3;
+  display: block;
+  border: 1px solid rgba(201,142,161,.57);
+  border-radius: 50px;
+  padding: 8px 13px;
+  background: rgba(255,251,254,.71);
+  color: #9d5279;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  box-shadow: 0 3px 12px rgba(151,92,127,.07);
+  pointer-events: none;
+}
+html .hero-overline { color: #ac527c !important; }
+html .hero-overline span { color: #c88aa7 !important; }
+html .hero-copy h1 { color: #713d5c !important; }
+html .hero-copy h1 em { color: #b65c88 !important; }
+html .hero-copy > p { color: #896a7d !important; }
+html .hero-footnote { color: #a16c88 !important; }
+html .hero-footnote span { color: #b4678f !important; }
+html .hero-orb, html .hero-line { border-color: rgba(255,255,255,.65) !important; }
+html .orb-two { background: rgba(255,255,255,.21) !important; }
+html .hero-window {
+  border-color: #fffaff !important;
+  background: #fff6fc !important;
+  box-shadow: 0 11px 25px rgba(125,63,99,.15),0 0 0 3px rgba(255,255,255,.4) !important;
+}
+html .window-sky {
+  background: linear-gradient(180deg,#a7a9ca 0%,#d4c9e0 42%,#efdeee 72%,#f6edf5 100%) !important;
+}
+html .window-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.96) 1.6px,transparent 2px),
+    radial-gradient(circle,rgba(255,255,255,.81) 1px,transparent 1.5px);
+  background-size: 48px 61px,37px 55px;
+  background-position: 6px 12px,27px 33px;
+}
+html .sun-dot {
+  background: #fff7e5 !important;
+  box-shadow: 0 0 0 9px rgba(255,244,224,.18),0 0 0 24px rgba(255,242,224,.09),0 0 27px rgba(255,252,242,.4) !important;
+}
+html .cloudlet { background: rgba(255,253,255,.7) !important; }
+html .hill-back { background: #f8eaf3 !important; }
+html .hill-front { background: #fff9fc !important; }
+html .window-cross-v, html .window-cross-h { background: #fff9ff !important; }
+html .hero-art::before {
+  content: "🎄";
+  position: absolute;
+  z-index: 4;
+  bottom: 22px;
+  right: 17%;
+  font-size: 59px;
+  line-height: 1;
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+html .hero-art::after {
+  content: "✧  ❄  ✧";
+  position: absolute;
+  z-index: 3;
+  top: 2px;
+  right: 2%;
+  color: #e8acc5;
+  font-size: 18px;
+  letter-spacing: 8px;
+  pointer-events: none;
+}
+html .floating-note {
+  background: rgba(255,252,254,.97) !important;
+  border: 1px solid #edd1df !important;
+  color: #ac6d8d !important;
+  box-shadow: 0 7px 18px rgba(148,75,120,.12) !important;
+}
+html .hero-cat { color: #b87a9d !important; }
+html .hero-side-stamp { color: #a66b88 !important; border-color: #e2b9ce !important; }
+html .hero-side-stamp span { color: #ac577f !important; }
+html .hero-side-stamp small { color: #bd879f !important; }
+
+/* Dashboard: winter sweets, keeps all real photo thumbnails */
+html .stat-card {
+  background: rgba(255,253,254,.95) !important;
+  border: 1px solid #efd9e3 !important;
+  border-radius: 17px;
+  box-shadow: 0 7px 24px rgba(166,95,128,.06) !important;
+}
+html .stat-card::after {
+  content: "✧";
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  color: rgba(198,145,171,.48);
+  font-size: 16px;
+  pointer-events: none;
+}
+html .stat-pink { background: #f5d8e6 !important; color: #b35580 !important; }
+html .stat-lilac { background: #eee4f7 !important; color: #8976a8 !important; }
+html .stat-peach { background: #fff0df !important; color: #b18458 !important; }
+html .stat-mint { background: #e4f3ee !important; color: #729a8b !important; }
+html .stat-card strong { color: #75465f !important; }
+html .stat-card small { color: #a08798 !important; }
+html .recent-story, html .favorite-card, html .quote-card,
+html .mini-empty, html .inspiration-strip {
+  background: rgba(255,251,253,.97) !important;
+  border: 1px solid #ead4e0 !important;
+  box-shadow: 0 7px 21px rgba(166,93,133,.06) !important;
+}
+html .recent-story:hover, html .favorite-card:hover {
+  border-color: #d997b6 !important;
+  box-shadow: 0 12px 24px rgba(161,74,117,.13) !important;
+}
+html .recent-story h3, html .favorite-card strong { color: #7b4b66 !important; }
+html .recent-story p, html .recent-story small, html .favorite-card small { color: #a48597 !important; }
+html .recent-story-copy > button { color: #b45c83 !important; }
+html .quote-card {
+  background: linear-gradient(130deg,#fbedf4,#fff7fb) !important;
+  border-color: #e5c3d3 !important;
+}
+html .quote-card::after { color: rgba(206,133,168,.16) !important; }
+html .quote-card-top { color: #b06387 !important; }
+html .quote-card-top button { color: #b6688b !important; background: #fffafd !important; border-color: #efd4e1 !important; }
+html .quote-card blockquote { color: #77576c !important; }
+html .quote-card-bottom { color: #bd90a7 !important; }
+html .favorite-star { background: #fff0d8 !important; color: #c28f50 !important; }
+html .mini-empty-icon, html .empty-icon { background: #f7deea !important; color: #ba6894 !important; }
+html .mini-empty b, html .inline-empty b { color: #865d73 !important; }
+html .mini-empty p, html .inline-empty > span { color: #a78899 !important; }
+html .story-thumbnail:not(.has-story-cover) {
+  background: linear-gradient(150deg,#e7d9ec,#f7dce9 57%,#e2d9ec) !important;
+}
+html .thumb-sun { background: #fff9e6 !important; box-shadow: 0 0 17px rgba(248,225,175,.7) !important; }
+html .thumb-hill, html .story-thumbnail::before, html .story-thumbnail::after { background: #d4d7e6 !important; }
+html .thumb-flower { color: #fff !important; }
+html .inspiration-strip {
+  background:
+    radial-gradient(ellipse 44% 88% at 93% 14%,rgba(255,255,255,.85),transparent 88%),
+    linear-gradient(115deg,#f9dce9,#fdf0f6 66%,#f8e5f1) !important;
+  border-color: #e6b8ce !important;
+  border-radius: 19px;
+  box-shadow: 0 12px 26px rgba(174,100,136,.10) !important;
+}
+html .inspiration-strip::before {
+  content: "❄";
+  position: absolute;
+  font-size: 74px;
+  right: 8%;
+  top: -23px;
+  color: rgba(207,133,166,.14);
+  pointer-events: none;
+}
+html .inspiration-icon {
+  background: linear-gradient(145deg,#efd0df,#f4e0ec) !important;
+  color: #ae587d !important;
+  border: 1px solid #e4b5ce;
+}
+html .inspiration-strip .eyebrow { color: #b45a81 !important; }
+html .inspiration-strip h3 { color: #75435e !important; }
+html .inspiration-strip p { color: #906f82 !important; }
+html .strip-doodle { color: #c984a6 !important; }
+html .home-bottom-line { color: #ae8499 !important; }
+html .home-bottom-line span { color: #c78bab !important; }
+html .inline-empty { background: #fff7fb !important; border-color: #ead0dc !important; }
+html .inline-empty button { color: #b25b87 !important; }
+
+/* Shared transitions and seasonal trim */
+html :is(.story-card,.character-card,.moment-card,.idea-card,.relationship-card,.search-result-card,.favorite-card,.recent-story,.tag-cloud-chip):hover {
+  border-color: #d99bb7 !important;
+}
+@keyframes ny-twinkle {
+  0%,100% { opacity: .85; transform: rotate(-13deg) scale(1); }
+  50% { opacity: 1; transform: rotate(0) scale(1.09); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .brand-mark::after { animation: none !important; }
+}
+@media (max-width: 960px) {
+  html .hero-card::after { right: 12px; bottom: 12px; }
+  html .hero-art::before { font-size: 47px; }
+}
+@media (max-width: 700px) {
+  html .app-shell::before { opacity: .19; }
+  html .sidebar::after { display: none !important; }
+  html .hero-card { padding-bottom: 66px; }
+  html .hero-card::after { font-size: 7px; letter-spacing: .7px; bottom: 12px; }
+  html .hero-card::before { display: none; }
+  html .hero-art::before { font-size: 37px; bottom: 32px; }
+  html .hero-art::after { display: none; }
+  html .page-header h1::after { font-size: .35em; }
+  html .decor-cloud::after { display: none !important; }
+}
