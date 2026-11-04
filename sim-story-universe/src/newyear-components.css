@@ -1,0 +1,365 @@
+/*
+ * PINK WINTER WONDERLAND — all inner pages and editors.
+ * Coverage: generations, characters, stories, moments, relationships,
+ * family tree, ideas, search, editor forms, readers and first milestones.
+ */
+
+/* A shared family of frosted cards for every page */
+html :is(.story-card,.character-card,.moment-card,.relationship-card,
+  .idea-card,.search-result-card,.backup-option,.result-group,.tree-node,
+  .tree-node-secondary,.favorite-card,.recent-story) {
+  background: linear-gradient(148deg,#fffcfe,#fff8fc) !important;
+  border: 1px solid #ead4e0 !important;
+  box-shadow: 0 6px 23px rgba(158,82,122,.07) !important;
+}
+html :is(.story-card,.character-card,.moment-card,.relationship-card,
+  .idea-card,.search-result-card,.tree-node,.tree-node-secondary):hover {
+  border-color: #d79ab7 !important;
+  box-shadow: 0 14px 30px rgba(157,76,120,.13) !important;
+}
+
+/* Stories archive and chapters */
+html .story-intro-note,
+html .chapter-toolbar,
+html .dynasty-chapter,
+html .unassigned-chapter,
+html .inline-empty {
+  background: linear-gradient(130deg,#fffafd,#fcf0f6) !important;
+  border: 1px solid #eed6e2 !important;
+  box-shadow: 0 7px 21px rgba(167,89,130,.06) !important;
+}
+html .chapter-toolbar > div, html .chapter-toolbar > div b { color: #875b75 !important; }
+html .dynasty-chapter[open] { border-color: #d6a4ba !important; }
+html .dynasty-chapter-number,
+html .unassigned-chapter .dynasty-chapter-number {
+  background: #f6dce8 !important;
+  color: #b45b84 !important;
+  border: 1px solid #edd0dd;
+}
+html .dynasty-chapter-kicker { color: #bb7797 !important; }
+html .dynasty-chapter-heading > b { color: #72495f !important; }
+html .dynasty-chapter-heading > small,
+html .dynasty-chapter-summary p { color: #a48798 !important; }
+html .story-card { border-radius: 18px !important; overflow: hidden; }
+html .story-card-visual:not(.has-photo),
+html .story-card-1 .story-card-visual:not(.has-photo),
+html .story-card-2 .story-card-visual:not(.has-photo),
+html .story-card-3 .story-card-visual:not(.has-photo) {
+  background: linear-gradient(146deg,#e8dced 0%,#f8dce9 48%,#e0d9ee 72%,#fef0f5 100%) !important;
+}
+html .story-card-visual.has-photo { background-size: cover; background-position: center; }
+html .story-card-visual:not(.has-photo)::after {
+  content: "❄";
+  position: absolute;
+  top: 35%;
+  right: 19%;
+  z-index: 1;
+  font: 48px/1 Georgia,serif;
+  color: rgba(255,255,255,.68);
+  text-shadow: 0 2px 10px rgba(184,113,150,.2);
+  pointer-events: none;
+}
+html .doodle-moon { background: #fff9e8 !important; box-shadow: 0 0 18px rgba(255,255,255,.6) !important; }
+html .mountain-a { background: #d5cfe3 !important; }
+html .mountain-b { background: #f5eaf3 !important; }
+html .doodle-stars, html .doodle-flower { color: #fff7fd !important; }
+html .story-visual-top { color: #835f79 !important; }
+html .story-card-ribbon {
+  color: #975578 !important;
+  background: rgba(255,252,254,.87) !important;
+  border: 1px solid rgba(223,184,205,.72) !important;
+}
+html .story-card-meta { color: #b28a9c !important; }
+html .story-title-button h3 { color: #774860 !important; }
+html .story-title-button small { color: #b37f96 !important; }
+html .story-card-body > p { color: #927587 !important; }
+html .story-card-actions, html .card-actions, html .relation-actions {
+  background: rgba(255,249,252,.92) !important;
+  border-color: #edcfdf !important;
+}
+html .tag-pill { color: #a2517e !important; background: #f9e7ef !important; border-color: #eccedb !important; }
+
+/* Generations, character archive and the personal milestones */
+html .generation-archive {
+  background:
+    radial-gradient(ellipse 42% 74% at 93% 14%,rgba(255,255,255,.9),transparent 82%),
+    linear-gradient(140deg,#fbe5ef,#fff9fc) !important;
+  border: 1px solid #e5c6d6 !important;
+  box-shadow: 0 9px 27px rgba(166,90,125,.07) !important;
+}
+html .generation-archive-heading h2 { color: #75495f !important; }
+html .generation-archive-heading p { color: #96788c !important; }
+html .generation-archive-mark {
+  background: #f7dce8 !important;
+  color: #b85b85 !important;
+  border: 1px solid #ebc6d8;
+}
+html .generation-tab {
+  background: #fffafd !important;
+  border-color: #ead2df !important;
+  color: #aa8a9c !important;
+}
+html .generation-tab > span { color: #b5809e !important; }
+html .generation-tab > b { color: #79516a !important; }
+html .generation-tab > small { color: #a48a98 !important; }
+html .generation-tab.is-active {
+  background: linear-gradient(125deg,#f3dce9,#fff7fb) !important;
+  border-color: #d49bb6 !important;
+  box-shadow: inset 0 0 0 1px rgba(216,156,187,.2),0 7px 19px rgba(164,88,126,.09) !important;
+}
+html .generation-tab.is-active > b { color: #a54776 !important; }
+html .character-role-tabs {
+  background: rgba(255,254,254,.75) !important;
+  border-color: #edd9e3 !important;
+}
+html .character-role-tab { color: #967688 !important; }
+html .character-role-tab .role-tab-symbol { color: #c080a0 !important; }
+html .character-role-tab.is-active {
+  background: #f9e7f0 !important;
+  border-color: #e9c6d8 !important;
+  color: #9e4d78 !important;
+}
+html .character-role-tab b,
+html .character-role-tab.is-active b {
+  color: #a65982 !important;
+  background: #f5dce7 !important;
+}
+html .character-card { border-radius: 20px !important; }
+html .character-card:not(.has-portrait-image) .character-portrait,
+html .character-card-1:not(.has-portrait-image) .character-portrait,
+html .character-card-2:not(.has-portrait-image) .character-portrait,
+html .character-card-3:not(.has-portrait-image) .character-portrait {
+  background: linear-gradient(145deg,#e7dceb,#f2d9e8 59%,#fce9f1) !important;
+}
+html .character-card.has-portrait-image .character-card-info {
+  background: linear-gradient(150deg,#fffcfe,#fff7fb) !important;
+  color: #79516a !important;
+}
+html .character-card .character-card-info {
+  background: linear-gradient(150deg,#fffcfe,#fff7fb) !important;
+}
+html .character-name-row h3,
+html .character-card.has-portrait-image .character-name-row h3 { color: #74485f !important; text-shadow: none !important; }
+html .character-card .character-summary,
+html .character-card.has-portrait-image .character-summary { color: #927387 !important; text-shadow: none !important; }
+html .character-career { color: #b66589 !important; }
+html .character-card-footer,
+html .character-card.has-portrait-image .character-card-footer { border-color: #eedce5 !important; color: #aa8499 !important; text-shadow: none !important; }
+html .character-card-footer span:last-child { color: #b45e87 !important; text-shadow: none !important; }
+html .portrait-label, html .portrait-flowers { color: #ad7899 !important; }
+html .character-card.has-portrait-image .portrait-label,
+html .character-card.has-portrait-image .portrait-flowers { color: rgba(255,255,255,.96) !important; }
+html .avatar {
+  background: linear-gradient(135deg,#f5dce9,#edd0e1) !important;
+  border: 3px solid rgba(255,255,255,.88) !important;
+  color: #aa597f !important;
+}
+html .favorite-star { color: #ba8a52 !important; background: #fff4de !important; }
+html .liked-heart { color: #c55c8f !important; }
+html .trait-row span { background: #f8e4ed !important; color: #a4688a !important; }
+html .character-card-dead:not(.has-portrait-image) .character-card-main,
+html .character-death-notice {
+  background: linear-gradient(140deg,#f1eef2,#eae4ed) !important;
+  border-color: #dcd2df !important;
+}
+html .character-death-notice b,
+html .character-death-notice p { color: #776978 !important; }
+html .character-firsts-preview {
+  background: linear-gradient(136deg,#fae8f0,#fff6fa) !important;
+  border: 1px solid #e8cadb !important;
+}
+html .character-firsts-caption { color: #b55b87 !important; }
+html .character-firsts-row { border-top-color: #eed7e3 !important; }
+html .character-firsts-icon { background: #f1d4e2 !important; color: #b7608a !important; }
+html .character-firsts-copy b { color: #885573 !important; }
+html .character-firsts-copy small { color: #ad829a !important; }
+html .character-firsts-copy em { color: #9c7b8d !important; }
+
+/* Moments and photo collections; original uploads stay untouched */
+html .moments-intro {
+  background: linear-gradient(125deg,#f9e2ed,#fff9fc) !important;
+  border: 1px solid #e8c7d7 !important;
+  color: #88647a !important;
+}
+html .moments-intro > span { color: #b95d88 !important; }
+html .moments-intro b { color: #835570 !important; }
+html .moment-card { border-radius: 19px !important; }
+html .moment-card-cover {
+  background: linear-gradient(145deg,#efd7e6,#dcd8ed 50%,#f8e6f0) !important;
+}
+html .moment-cover-placeholder { color: #b56592 !important; }
+html .moment-card-date { text-shadow: 0 1px 5px rgba(76,40,61,.65); }
+html .moment-card-title h3 { color: #784a64 !important; }
+html .moment-card-copy > p { color: #9a7b8e !important; }
+html .moment-card-meta { color: #b08a9e !important; }
+html .moment-card-actions { background: rgba(255,249,252,.91) !important; border-color: #efdce5 !important; }
+html .moment-age-label { color: #ad5883 !important; background: #f5dfeb !important; }
+html .moment-character-picker label {
+  background: #fffafe !important;
+  border-color: #e8d4df !important;
+  color: #80586f !important;
+}
+html .moment-character-picker label.is-selected { background: #f6dbe8 !important; border-color: #cb86a7 !important; }
+html .moment-image-editor-card, html .moment-reader-gallery figure {
+  background: #fffafd !important;
+  border-color: #edd9e3 !important;
+}
+html .moment-image-editor-card > img { background: #f7e6ef !important; }
+html .moment-reader-description, html .moment-reader-text,
+html .moment-reader-gallery figcaption { color: #896d80 !important; }
+html .moment-reader-link { background: #fff5fa !important; color: #aa5380 !important; border-color: #edd4e1 !important; }
+html .character-moment-row { background: #fffafd !important; border-color: #ecd4e0 !important; }
+html .character-moment-row:hover { background: #fff0f7 !important; }
+html .character-moment-date { color: #a9698a !important; }
+
+/* Relationships: the summary, count badges, people, and sentiment scales */
+html .relationship-summary {
+  background:
+    radial-gradient(circle at 96% 12%,rgba(255,255,255,.93),transparent 27%),
+    linear-gradient(110deg,#f8dfeb,#fff5fa) !important;
+  border: 1px solid #e4bcd0 !important;
+  box-shadow: 0 8px 24px rgba(158,82,119,.09) !important;
+}
+html .relationship-summary-icon {
+  background: linear-gradient(135deg,#edc1d7,#f3dce9) !important;
+  color: #ac5380 !important;
+  border: 1px solid #e0aeca;
+}
+html .relationship-summary b { color: #7a4e65 !important; }
+html .relationship-summary p { color: #a07b8c !important; }
+html .relationship-type-counts span { color: #906e82 !important; }
+html .relationship-card { border-radius: 16px !important; }
+html .relation-person b { color: #775169 !important; }
+html .relation-person small { color: #af8e9e !important; }
+html .relation-description { color: #97798b !important; }
+html .relation-connector span { background: #fffbfd !important; }
+html .relation-status { background: #f6e8ef !important; color: #aa718c !important; }
+html .relationship-scales-editor {
+  background: linear-gradient(133deg,#fffafd,#f7eaf1) !important;
+  border: 1px solid #ead2df !important;
+}
+html .relationship-scale-mini > span { color: #a17e94 !important; }
+html .relationship-scale-mini > i { background: #f2e4ec !important; }
+html .selected-relationship {
+  background: #fff6fb !important;
+  border: 1px solid #edd6e1 !important;
+}
+html .selected-relation-icon { background: #f6deea !important; color: #b6658a !important; }
+html .selected-relation-copy b { color: #7c5570 !important; }
+html .selected-relation-copy small, html .selected-relation-copy p { color: #a08395 !important; }
+html .relation-actions, html .selected-relation-actions { background: rgba(255,250,252,.92) !important; }
+
+/* Family tree's canvas: soft snow-dot grid rather than Halloween plum */
+html .tree-board-frame { background: #fffafd !important; border-color: #ead4de !important; }
+html .tree-board {
+  background-color: #fff9fc !important;
+  background-image: radial-gradient(#ebd4df 1px,transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+html .tree-tools { background: #fffafd !important; border-color: #eacbdc !important; }
+html .tree-node, html .tree-node-secondary {
+  background: rgba(255,253,254,.98) !important;
+  border-color: #e4c9d9 !important;
+}
+html .tree-node:hover, html .tree-node.dragging { border-color: #c883a6 !important; }
+html .tree-node-main, html .tree-node-main strong { color: #78536c !important; }
+html .tree-node-top { color: #b2889e !important; }
+html .tree-node-top svg { color: #bb7097 !important; }
+html .tree-board-hint, html .tree-empty,
+html .tree-node-relationship-hints {
+  background: rgba(255,250,253,.97) !important;
+  border-color: #e6cad8 !important;
+  color: #9b7390 !important;
+}
+html .tree-node-relationship-hints :is(b,small,span) { color: #986d83 !important; }
+html .tree-node-secondary :is(b,small,span) { color: #917188 !important; }
+html .tree-empty { background: rgba(255,252,254,.91) !important; }
+html .tree-legend { color: #a18293 !important; }
+html .tree-legend i.legend-dashed { border-color: #b4839d !important; }
+html .tree-focus-button { background: #fff9fc !important; color: #a34a73 !important; }
+html .tree-focus-button:hover { background: #f8e8ef !important; }
+html .tree-node-dead { background: #f3edf2 !important; border-color: #d8ced7 !important; }
+
+/* The ideas notebook */
+html .idea-mantra {
+  background: linear-gradient(122deg,#f8dfeb,#fff8fc) !important;
+  border: 1px solid #e6c3d7 !important;
+  color: #b35c82 !important;
+}
+html .idea-mantra b { color: #774c65 !important; }
+html .idea-mantra p { color: #997889 !important; }
+html .mantra-cat { color: #c47fa0 !important; }
+html .idea-card-0, html .idea-card-1,
+html .idea-card-2, html .idea-card-3, html .idea-card-4 {
+  background: linear-gradient(149deg,#fffcfe,#fcf2f7) !important;
+}
+html .idea-card::after {
+  content: "✧";
+  position: absolute;
+  top: 11px;
+  right: 14px;
+  color: rgba(196,139,171,.37);
+  font-size: 22px;
+  pointer-events: none;
+}
+html .idea-card h3 { color: #785067 !important; }
+html .idea-card > p { color: #9c7c90 !important; }
+html .idea-status {
+  color: #a26b8b !important;
+  background: #fff3f9 !important;
+  border-color: #eed8e3 !important;
+}
+html .idea-card-footer { border-color: #eedbe6 !important; }
+html .idea-card-footer > span { color: #af8ca0 !important; }
+html .idea-decoration { color: rgba(205,152,181,.13) !important; }
+
+/* Search, tags, results and empty states */
+html .search-hero {
+  background: linear-gradient(135deg,#f9e3ed,#fff9fc) !important;
+  border: 1px solid #e6c4d6 !important;
+  box-shadow: 0 8px 24px rgba(156,77,117,.06);
+}
+html .search-hero-icon { background: #f0d0e0 !important; color: #b25f88 !important; }
+html .search-hero > div:nth-child(2) b { color: #784a63 !important; }
+html .search-hero > div:nth-child(2) p { color: #96788c !important; }
+html .search-star { color: #c99a6c !important; }
+html .big-search { background: #fffafd !important; border-color: #e9cddc !important; }
+html .big-search button { background: #f8eaf2 !important; color: #b16a8e !important; }
+html .tag-cloud-chip {
+  background: #fffbfd !important;
+  border-color: #e8d1df !important;
+  color: #a36486 !important;
+}
+html .tag-cloud-chip span, html .result-group-head small { background: #f7e7ef !important; color: #b16d92 !important; }
+html .tag-cloud-chip:hover, html .tag-cloud-chip.selected {
+  background: #f4dbe7 !important;
+  border-color: #d19ab5 !important;
+  color: #9d4b75 !important;
+}
+html .tag-cloud-1, html .tag-cloud-2,
+html .tag-cloud-3, html .tag-cloud-4 { background: #fff9fc !important; }
+html .result-group { border-color: #edd9e3 !important; }
+html .result-group-head { color: #8d6480 !important; }
+html .search-result-card:hover { background: #fff0f7 !important; }
+html .search-result-card b { color: #81536d !important; }
+html .search-result-card small { color: #ae899f !important; }
+html .result-icon { background: #f6deeb !important; color: #b4668f !important; }
+html .result-status { background: #f8e8f1 !important; color: #aa678b !important; }
+html .quick-search-suggestions button {
+  background: #fffafd !important;
+  color: #a45b80 !important;
+  border-color: #e6cbd9 !important;
+}
+html .search-empty-splash p { color: #a6879a !important; }
+html .splash-doodle { background: #f6e1ea !important; color: #b87397 !important; }
+
+/* Cover unreadable text in miscellaneous states */
+html .empty-state {
+  background: linear-gradient(145deg,#fffafd,#f9edf4) !important;
+  border-color: #edd6e1 !important;
+  color: #8a6a81 !important;
+}
+html .empty-state p { color: #a08395 !important; }
+html .empty-icon { background: #f6deeb !important; color: #b86692 !important; }
+html .site-footer { border-color: #edd5e1 !important; color: #a98a9b !important; }
+html .site-footer button { background: #fff9fc !important; border-color: #ecd4e0 !important; color: #a45e83 !important; }
