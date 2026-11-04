@@ -60,8 +60,9 @@ html .app-shell::before {
   background-size: 123px 137px,173px 191px,241px 199px;
   background-position: 15px 32px,80px 85px,125px 14px;
 }
-html .app-shell > .main-area,
-html .app-shell > .sidebar { position: relative; z-index: 1; }
+html .app-shell > .main-area { position: relative; z-index: 1; }
+/* Do not change sidebar positioning: it must remain fixed on mobile. */
+html .app-shell > .sidebar { z-index: 80; }
 html .main-area { color: var(--ny-text); }
 ::selection { background: #f4cbdc !important; color: #713654 !important; }
 
