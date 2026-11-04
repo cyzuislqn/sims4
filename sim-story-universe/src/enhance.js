@@ -66,8 +66,8 @@ function setupProgress() {
 // ---------- Звёздный след за курсором (только мышь) ----------
 function setupSparkles() {
   if (reduceMotion || !finePointer) return;
-  const glyphs = ['✦', '✧', '✿', '♡', '·'];
-  const colors = ['#e9a7c0', '#cdbfe8', '#a9d3c0', '#f3c6a8', '#f0cf8d'];
+  const glyphs = ['❄', '✦', '✧', '❅', '·'];
+  const colors = ['#c66b94', '#e1a7c4', '#ba9bc9', '#e9bbd1', '#c99b62'];
   let last = 0;
   let alive = 0;
   window.addEventListener('pointermove', (e) => {
@@ -93,34 +93,11 @@ function setupSparkles() {
 
 // ---------- Ночная тема ----------
 function setupTheme() {
-  const KEY = 'ssu-theme';
-  const root = document.documentElement;
-  const read = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
-  const write = (v) => { try { localStorage.setItem(KEY, v); } catch { /* ignore */ } };
-
-  const saved = read();
-  const preferred = saved || (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'night' : 'day');
-  const apply = (mode) => {
-    if (mode === 'night') root.setAttribute('data-theme', 'night'); else root.removeAttribute('data-theme');
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', mode === 'night' ? '#1f1620' : '#fbf4f4');
-    button.textContent = mode === 'night' ? '☀️' : '🌙';
-    button.setAttribute('aria-label', mode === 'night' ? 'Включить дневную тему' : 'Включить ночную тему');
-    button.title = button.getAttribute('aria-label');
-  };
-
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'ssu-theme-toggle';
-  document.body.appendChild(button);
-
-  let mode = preferred;
-  apply(mode);
-  button.addEventListener('click', () => {
-    mode = mode === 'night' ? 'day' : 'night';
-    write(mode);
-    apply(mode);
-  });
+  // The fixed winter palette stays pink even when the device uses dark mode.
+  // No saved preference is changed; the normal theme toggle can return after the season.
+  document.documentElement.setAttribute('data-theme', 'holiday');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', '#fff1f8');
 }
 
 export function initEnhancements() {
