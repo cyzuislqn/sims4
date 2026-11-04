@@ -445,7 +445,56 @@ html .story-thumbnail:not(.has-story-cover) {
   background: linear-gradient(150deg,#e7d9ec,#f7dce9 57%,#e2d9ec) !important;
 }
 html .thumb-sun { background: #fff9e6 !important; box-shadow: 0 0 17px rgba(248,225,175,.7) !important; }
-html .thumb-hill, html .story-thumbnail::before, html .story-thumbnail::after { background: #d4d7e6 !important; }
+/* Snowy illustration is ONLY a placeholder. It must never cover real chapter images. */
+html .thumb-hill,
+html .story-thumbnail:not(.has-story-cover)::before,
+html .story-thumbnail:not(.has-story-cover)::after {
+  background: #d4d7e6 !important;
+}
+html .story-thumbnail.has-story-cover {
+  position: relative;
+  isolation: isolate;
+  background: #f9e9f1;
+}
+html .story-thumbnail.has-story-cover::before {
+  content: none !important;
+  display: none !important;
+}
+html .story-thumbnail.has-story-cover .story-thumbnail-image {
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html .story-thumbnail.has-story-cover::after {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: linear-gradient(to top,rgba(74,38,63,.25),transparent 52%) !important;
+  pointer-events: none;
+}
+html .story-thumbnail.has-story-cover .thumb-sun,
+html .story-thumbnail.has-story-cover .thumb-hill {
+  display: none !important;
+}
+html .story-thumbnail.has-story-cover .thumb-num,
+html .story-thumbnail.has-story-cover .thumb-flower {
+  position: absolute;
+  z-index: 3;
+  color: #fff !important;
+  text-shadow: 0 1px 5px rgba(59,32,50,.55);
+}
 html .thumb-flower { color: #fff !important; }
 html .inspiration-strip {
   background:
