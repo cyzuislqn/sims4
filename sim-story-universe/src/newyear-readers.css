@@ -1,0 +1,406 @@
+/*
+ * PINK WINTER WONDERLAND — dialogs, dossiers and story editing.
+ * Reader keeps the image-loading fix and its incremental "read more" UI.
+ * Avoid large GPU/backdrop filters in mobile Safari.
+ */
+
+/* Frosted dialogs, editors, banners */
+html .modal-backdrop {
+  background: rgba(86,49,79,.40) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+html .modal-panel,
+html .modal-panel.modal-wide {
+  background: #fffbfd !important;
+  border: 1px solid #f0d6e3 !important;
+  box-shadow: 0 24px 76px rgba(101,49,80,.23) !important;
+}
+html .modal-head {
+  background:
+    radial-gradient(circle at 96% 16%,rgba(255,255,255,.96),transparent 39%),
+    linear-gradient(115deg,#f8e2ed,#fff6fb) !important;
+  border-bottom: 1px solid #edd3df !important;
+}
+html .modal-head h2 { color: #71455e !important; }
+html .modal-head p:not(.eyebrow) { color: #9d7c90 !important; }
+html .modal-head .eyebrow { color: #b86288 !important; }
+html .modal-head > .icon-button {
+  background: rgba(255,252,254,.85) !important;
+  border-color: #ebccd9 !important;
+  color: #a3537b !important;
+}
+html .modal-body {
+  background: linear-gradient(#fffafc,#fffcfd) !important;
+  color: #785669 !important;
+}
+html .modal-actions,
+html .story-editor-form .modal-actions { background: #fff9fc !important; border-color: #eddae4 !important; }
+
+/* Forms throughout character / relationship / idea / story editors */
+html .form-field > span { color: #835b74 !important; }
+html .form-field > span b { color: #bc5a87 !important; }
+html .form-field input,
+html .form-field textarea,
+html .form-field select,
+html .moment-date-filter input {
+  background: #fffdfd !important;
+  color: #76556b !important;
+  border: 1px solid #ead1de !important;
+  border-radius: 11px;
+}
+html .form-field input:focus,
+html .form-field textarea:focus,
+html .form-field select:focus {
+  border-color: #c8799c !important;
+  box-shadow: 0 0 0 3px rgba(225,154,185,.18) !important;
+}
+html .form-field small { color: #a4879b !important; }
+html .form-section-heading { border-color: #efdae6 !important; }
+html .form-section-heading > span {
+  background: #f3d9e6 !important;
+  color: #aa5480 !important;
+}
+html .form-section-heading b { color: #80576c !important; }
+html .form-section-heading small { color: #ad8da0 !important; }
+html .form-note,
+html .form-error,
+html .auth-info,
+html .backup-tip,
+html .import-confirm,
+html .login-demo {
+  background: #fff4f9 !important;
+  border: 1px solid #edcfde !important;
+  color: #93687e !important;
+}
+html .form-error {
+  background: #fff0f1 !important;
+  border-color: #edc4ca !important;
+  color: #aa5b68 !important;
+}
+html .auth-info, html .backup-tip { background: #f0f7f3 !important; border-color: #d2e8db !important; color: #678a76 !important; }
+html .character-photo-editor,
+html .age-photo-upload-panel,
+html .story-block-editor,
+html .story-block-editor.block-quote,
+html .story-block-editor.block-heading,
+html .image-dropzone,
+html .image-block-preview,
+html .add-block-row {
+  background: #fff6fa !important;
+  border-color: #ecd3e0 !important;
+  color: #916c84 !important;
+}
+html .upload-photo-button,
+html .add-block-row button {
+  background: #fffdfd !important;
+  border-color: #e9cfdd !important;
+  color: #a65681 !important;
+}
+html .upload-photo-button:hover,
+html .add-block-row button:hover {
+  background: #f7e4ed !important;
+  border-color: #d5a1b9 !important;
+}
+html .favorite-toggle,
+html .fake-check,
+html .favorite-toggle > input:not(:checked) + .fake-check {
+  background: #fff6fb !important;
+  border-color: #eacddd !important;
+  color: #ad6289 !important;
+}
+html .login-illustration,
+html .backup-illustration {
+  background: linear-gradient(130deg,#f7dce9,#fff3f9) !important;
+  border-color: #e7bfce !important;
+}
+html .login-illustration-lock, html .backup-option-icon,
+html .confirm-icon, html .setup-steps p > span {
+  background: #f4dce8 !important;
+  color: #a85883 !important;
+}
+html .backup-file, html .backup-option,
+html .setup-steps p {
+  background: #fffafd !important;
+  border-color: #e9d0de !important;
+}
+html .backup-option h3, html .setup-steps b { color: #80546c !important; }
+html .backup-option p, html .setup-steps small { color: #a18495 !important; }
+html .image-block-preview button {
+  background: rgba(255,251,252,.94) !important;
+  color: #a64d79 !important;
+}
+html .character-photo-editor small { color: #a98899 !important; }
+html .remove-photo-link { color: #aa6083 !important; }
+html .favorite-toggle b { color: #825269 !important; }
+html .favorite-toggle small { color: #ab8b9e !important; }
+
+/* Age photography, upload panels and moment galleries */
+html .age-photo-editor-card,
+html .age-photo-card,
+html .moment-image-editor-card,
+html .moment-reader-gallery figure {
+  background: #fffafd !important;
+  border-color: #ecd2df !important;
+}
+html .age-photo-editor-card img,
+html .age-photo-card img,
+html .moment-image-editor-card > img {
+  background: #f5e3ed !important;
+}
+html .age-photo-editor-meta b { color: #85596e !important; }
+html .age-photo-editor-meta small,
+html .age-photo-card-copy small,
+html .age-photo-card-copy p { color: #a28396 !important; }
+html .age-photo-editor-actions button {
+  background: #fff5fa !important;
+  border-color: #e7ceda !important;
+  color: #a76083 !important;
+}
+html .age-photo-card-copy > span {
+  color: #a95a86 !important;
+  background: #f6deea !important;
+}
+html .moment-cover-choice,
+html .moment-draft-status { color: #a47c91 !important; }
+
+/* Character dossier */
+html .detail-portrait {
+  background: linear-gradient(142deg,#efdae8,#f7eaf1 65%,#e7e0f0) !important;
+  border-color: #e7cbdb !important;
+}
+html .detail-portrait::before { content: "❄" !important; color: rgba(255,255,255,.75) !important; }
+html .detail-portrait span { color: #aa7292 !important; }
+html .detail-mini-note {
+  background: linear-gradient(135deg,#fff2f8,#fbecf4) !important;
+  border-color: #efd4e2 !important;
+  color: #b16688 !important;
+}
+html .detail-mini-note p { color: #927084 !important; }
+html .detail-section { border-color: #eddbe6 !important; }
+html .detail-section h3 { color: #7e526d !important; }
+html .detail-lead { color: #866579 !important; }
+html .detail-info-row > span { color: #ad7d97 !important; }
+html .detail-info-row > p { color: #84677b !important; }
+html .detail-prose { color: #886d7d !important; }
+html .detail-secret-card, html .dream-card,
+html .fear-card, html .secret-section {
+  background: #fff6fb !important;
+  border: 1px solid #eed8e4 !important;
+}
+html .dream-card { background: #eef8f2 !important; border-color: #d8eadd !important; }
+html .fear-card { background: #fff0f3 !important; border-color: #efd9df !important; }
+html .detail-secret-card span { color: #a66e91 !important; }
+html .detail-secret-card p, html .secret-section p { color: #94758b !important; }
+html .detail-relation-row {
+  background: #fffafd !important;
+  border-color: #ecd2df !important;
+}
+html .detail-relation-row:hover { background: #fbe8f1 !important; }
+html .detail-relation-row b { color: #885d75 !important; }
+html .detail-relation-row small { color: #ae849a !important; }
+
+/* The three "first" moments preserved from the previous UI release */
+html .life-firsts-editor-card {
+  background: linear-gradient(132deg,#fffafd,#f9e9f2) !important;
+  border: 1px solid #e9cedd !important;
+}
+html .life-firsts-editor-title > span,
+html .life-firsts-event-symbol {
+  background: #f5dce8 !important;
+  color: #b5638b !important;
+}
+html .life-firsts-editor-title b { color: #81546c !important; }
+html .life-firsts-editor-title small { color: #ae8a9c !important; }
+html .life-firsts-editor-card .form-field > span { color: #916b81 !important; }
+html .life-firsts-editor-card .form-field input,
+html .life-firsts-editor-card .form-field select,
+html .life-firsts-editor-card .form-field textarea {
+  background: #fffdfd !important;
+  color: #80586f !important;
+  border-color: #e9cfdc !important;
+  color-scheme: light;
+}
+html .life-firsts-editor-card .form-field :is(input,select,textarea):focus {
+  border-color: #c47b9e !important;
+  outline-color: rgba(213,145,178,.24) !important;
+}
+html .life-firsts-intro { color: #a07d92 !important; }
+html .life-firsts-event, html .life-firsts-event.is-filled {
+  background: linear-gradient(135deg,#fffafd,#fbebf3) !important;
+  border: 1px solid #eed7e1 !important;
+}
+html .life-firsts-event.is-filled { border-color: #e4bad0 !important; }
+html .life-firsts-event-body > b { color: #83546d !important; }
+html .life-firsts-partner {
+  background: #fffdfd !important;
+  border-color: #e6bfd3 !important;
+  color: #a05b80 !important;
+}
+html .life-firsts-partner:hover { background: #f9e8f2 !important; }
+html .life-firsts-when { color: #ae6c8c !important; }
+html .life-firsts-description { color: #917487 !important; }
+html .life-firsts-partner-missing,
+html .life-firsts-not-yet { color: #b394a8 !important; }
+
+/* Inline story editor and content blocks */
+html .inline-story-toolbar {
+  background: #fff2f8 !important;
+  border-color: #eed4e1 !important;
+  box-shadow: 0 5px 16px rgba(150,84,119,.08) !important;
+}
+html .inline-story-toolbar button {
+  background: #fffcfe !important;
+  color: #a45b80 !important;
+  border-color: #e6cad9 !important;
+}
+html .inline-story-toolbar button:hover {
+  color: #963b6d !important;
+  background: #f9e5ef !important;
+}
+html .inline-story-editor {
+  background: #fffdfd !important;
+  border-color: #ead2df !important;
+  color: #715569 !important;
+}
+html .inline-story-editor:focus {
+  border-color: #d297b4 !important;
+  box-shadow: 0 0 0 3px rgba(216,150,177,.12) !important;
+}
+html .inline-story-editor h3 { color: #814c6c !important; }
+html .inline-story-editor blockquote {
+  background: #fff3f9 !important;
+  border-left-color: #cd8fac !important;
+  color: #9f6789 !important;
+}
+html .inline-story-editor figure.inline-story-image img { background: #fff1f7 !important; }
+html .inline-story-editor.is-drop-target { background: #f8e4ee !important; }
+html .story-block-editor.block-quote { background: #fff1f7 !important; }
+
+/* Immersive story reader: warm white page, snow-rose cover, champagne details */
+html .modal-panel.story-reader-modal,
+html .modal-panel.story-editor-modal {
+  background: #fffafb !important;
+  box-shadow: none !important;
+}
+html .story-reader-modal .modal-head,
+html .story-editor-modal .modal-head {
+  background: linear-gradient(100deg,#f8e1ec,#fff8fc) !important;
+  border-bottom-color: #ebccd9 !important;
+}
+html .story-reader-modal .modal-body,
+html .story-editor-modal .modal-body {
+  background: linear-gradient(#fffcfe,#fff9fc) !important;
+}
+html .story-reader-cover {
+  background:
+    radial-gradient(circle at 86% 17%,rgba(255,255,255,.77),transparent 43%),
+    linear-gradient(140deg,#f8dce9,#e7d8ed 60%,#fde7f1) !important;
+  border: 1px solid #e9c6d7 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+}
+html .story-reader-cover::before {
+  border-color: rgba(255,255,255,.71) !important;
+}
+html .story-reader-cover::after {
+  background: rgba(255,249,253,.48) !important;
+}
+html .reader-cover-overline { color: #ac6b91 !important; }
+html .reader-cover-number { color: rgba(255,255,255,.94) !important; text-shadow: 0 2px 14px rgba(176,112,153,.21); }
+html .story-reader-cover h2 { color: #74455f !important; }
+html .story-reader-cover > p { color: #9a738b !important; }
+html .reader-cover-flower {
+  color: #c08dad !important;
+}
+html .reader-cover-flower::after { content: "❄"; margin-left: 5px; color: #fff; }
+html .reader-cover-mood { color: #a97f96 !important; }
+html .reader-opening-quote {
+  border-color: #ecd3e0 !important;
+  color: #b96b92 !important;
+}
+html .reader-opening-quote p { color: #895d75 !important; }
+html .reader-opening-quote span { color: #b68b9e !important; }
+html .reader-inline-quote {
+  border-left-color: #cf93b0 !important;
+  color: #a46b87 !important;
+}
+html .story-reader-body { color: #70566a !important; }
+html .story-reader-body p { color: #705769 !important; }
+html .story-reader-body h3 { color: #80516d !important; }
+html .story-reader-body strong { color: #75445f !important; }
+html .reader-figure img { box-shadow: 0 11px 28px rgba(153,91,123,.10) !important; }
+html .reader-figure figcaption { color: #ab859b !important; }
+html .reader-figure figcaption span { color: #c489a6 !important; }
+html .reader-end-mark { color: #c089aa !important; }
+html .reader-end-mark span:nth-child(2) { color: #ac849c !important; }
+html .reader-edit-bottom { border-color: #efdce5 !important; }
+
+/* The incremental reader was introduced to avoid mobile Safari crashes.
+   Keep its interface now that Halloween.css is no longer imported. */
+html .reader-load-more {
+  margin: 30px auto 14px;
+  padding: 24px 18px;
+  max-width: 470px;
+  text-align: center;
+  border: 1px solid #e9cadb;
+  border-radius: 18px;
+  background: linear-gradient(135deg,#f9e5ee,#fff8fc);
+}
+html .reader-load-more p {
+  color: #936f85 !important;
+  font-size: 13px;
+  margin: 0 0 13px;
+}
+html .reader-load-more button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* Feedback and footer */
+html .toast {
+  background: #fffafd !important;
+  color: #815670 !important;
+  border: 1px solid #e6c8d8 !important;
+  box-shadow: 0 10px 31px rgba(147,76,111,.15) !important;
+}
+html .toast-error { background: #fff0f2 !important; border-color: #e9bbc7 !important; }
+html .toast > button { background: #f9e6ef !important; color: #a35b81 !important; }
+html .site-footer { color: #af8398 !important; }
+html .site-footer b { color: #c69b72 !important; }
+
+/* Mobile safety / performance.
+   Do not create giant blurred fullscreen layers or decode a cover image
+   behind the reader on phones. The stored image URL remains unchanged. */
+@media (max-width: 960px) {
+  html .modal-backdrop { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
+@media (max-width: 700px) {
+  html body .modal-backdrop:has(.story-reader-modal) {
+    background: #fff9fc !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html body .story-reader-modal {
+    animation: none !important;
+    background: #fffafd !important;
+  }
+  html body .story-reader-modal .story-reader-cover {
+    background-image: linear-gradient(140deg,#f8deea,#e8dbee,#fff0f6) !important;
+  }
+  html .story-reader-modal .reader-figure img { content-visibility: auto; }
+  html .story-reader-modal .modal-body,
+  html .story-editor-modal .modal-body { background: #fffcfd !important; }
+  html .reader-load-more { margin: 22px 0; padding: 17px 13px; }
+  html .reader-load-more button { width: 100%; }
+  html .life-firsts-editor-fields { grid-template-columns: minmax(0,1fr); }
+  html .life-firsts-event { padding: 13px; }
+  html .modal-panel, html .modal-panel.modal-wide {
+    border-left: 0 !important;
+    border-right: 0 !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .modal-panel { animation: none !important; }
+  html .ssu-spark { display: none !important; }
+}
