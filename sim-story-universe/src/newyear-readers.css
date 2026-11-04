@@ -405,3 +405,43 @@ html .site-footer b { color: #c69b72 !important; }
   html .modal-panel { animation: none !important; }
   html .ssu-spark { display: none !important; }
 }
+
+
+/* Final pass: small controls and visual fragments across all pages. */
+html .flower-pot::after { background: #d7bfc7 !important; }
+html .flower-pot div { background: #91b5a7 !important; }
+html .story-card-bottom > button {
+  background: transparent !important;
+  color: #af5c86 !important;
+}
+html .tree-node-handle {
+  background: #f8e8f0 !important;
+  border-color: #eacddb !important;
+  color: #a8668b !important;
+}
+html .password-input button {
+  background: transparent !important;
+  color: #aa5d81 !important;
+}
+html .mobile-scrim {
+  background: rgba(81,39,67,.32) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html .inline-image-remove {
+  background: rgba(107,49,80,.85) !important;
+  color: #fff !important;
+}
+html .relationship-scale-control > b {
+  background: #f9e8f1 !important;
+  color: #a7618a !important;
+}
+html .death-stamp,
+html .tree-death-stamp {
+  background: #f2e9ef !important;
+  border-color: #d1c3ce !important;
+  color: #756473 !important;
+}
+html .death-ribbon {
+  background: #a39aa8 !important;
+}
