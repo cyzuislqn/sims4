@@ -53,6 +53,10 @@ html .app-shell::before {
   z-index: 0;
   opacity: .35;
   pointer-events: none;
+  /* The old enhancement layer was GPU-blurred and animated; avoid that on iPhone. */
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
   background-image:
     radial-gradient(circle,rgba(199,125,158,.27) 1px,transparent 1.7px),
     radial-gradient(circle,rgba(209,160,104,.32) 1px,transparent 1.7px),
